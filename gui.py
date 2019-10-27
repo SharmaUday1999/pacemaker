@@ -48,9 +48,7 @@ class pacemaker(tk.Tk):
 
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold")
 
-        
-        self.currentFrame = '';
-        print('initing')
+    
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
         # will be raised above the others
@@ -77,19 +75,8 @@ class pacemaker(tk.Tk):
         '''Show a frame for the given page name'''
         frame = self.frames[page_name]
         frame.tkraise()
-        self.currentFrame = page_name
-        print(self.currentFrame)
 
-    def current_frame(self):
-        print (self.currentFrame)
-        return self.currentFrame
-    
-    def update_frame(self, page_name):
-        frame = self.frames[page_name]
-        frame.update()
         
-
-
 class welcomePage(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -129,7 +116,6 @@ class registerPage(tk.Frame):
             current_column = ws.max_column
 
             duplicateUsernameToggle = 0
-            print(duplicateUsernameToggle)
 
             for i in range(1,current_row+1):
                 if ws.cell(row = i, column = 4).value == usernameLabelEntry.get():
@@ -225,7 +211,6 @@ class loginPage(tk.Frame):
             usernameLabelEntryLogin.delete(0,'end')
             passwordLabelEntryLogin.delete(0,'end')
             mainPage.setLoggedInRow(self.controller.frames['mainPage'], loggedInRow)
-            print (loggedInRow)
 
         #implement incorrect login text
 
@@ -324,10 +309,7 @@ class mainPage(tk.Frame):
         vrpEntry.configure(state= self._params['VRP'][mode])
         arpEntry.configure(state= self._params['ARP'][mode])
 
-        controller.current_frame()
-
     def Save(self):
-        print(loggedInRow)
 
         ws.cell(row = loggedInRow, column = 6).value = lrlEntry.get()
         ws.cell(row = loggedInRow, column = 7).value = urlEntry.get()
@@ -340,8 +322,6 @@ class mainPage(tk.Frame):
         wb.save(filename)
 
     def populateUserData(self):
-        print('populating')
-        print(self._loggedInRow)
         lrlEntry.insert('end', ws.cell(row = self._loggedInRow, column = 6).value if type(ws.cell(row = self._loggedInRow, column = 6).value) == int else 0)
         urlEntry.insert('end', ws.cell(row = self._loggedInRow, column = 7).value if type(ws.cell(row = self._loggedInRow, column = 7).value) == int else 0)
         atrialAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 8).value if type(ws.cell(row = self._loggedInRow, column = 8).value) == int else 0)
@@ -361,10 +341,6 @@ class mainPage(tk.Frame):
         self.controller = controller
         label = tk.Label(self, text="WELCOME TO THE PACEMAKER PORTAL", font=controller.title_font).grid(row = 0, column = 0, columnspan = 5)
 
-
-        global loggedInRow
-        print(loggedInRow)
-
         #Page Navigation
         logoutButton = tk.Button(self, text="Logout",
                            command=lambda: controller.current_frame)
@@ -372,7 +348,7 @@ class mainPage(tk.Frame):
 
         #Pacing Modes
         aooButton = tk.Button(self, text="AOO",
-                           command=lambda: controller.update_frame('mainPage'))
+                           command=lambda: self.setMode('AOO'))
         aooButton.grid(row = 10, column = 0, padx = 5, pady = 5)
 
         vooButton = tk.Button(self, text="VOO",
