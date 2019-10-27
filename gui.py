@@ -3,11 +3,6 @@ from tkinter import font  as tkfont # python 3
 import openpyxl
 import os
 
-
-global loggedInUser
-global loggedInRow
-
-loggedInUser = 0
 loggedInRow = 0
 
 # opening the existing excel file
@@ -213,7 +208,6 @@ class loginPage(tk.Frame):
         if ws.cell(row = rowMatchPassword, column = 5).value == passwordLabelEntryLogin.get():
             global loggedInRow
             loggedInRow = rowMatchPassword
-
             self.controller.show_frame('mainPage')
             usernameLabelEntryLogin.delete(0,'end')
             passwordLabelEntryLogin.delete(0,'end')
@@ -315,6 +309,7 @@ class mainPage(tk.Frame):
 
     def Save(self):
         print(loggedInRow)
+
         ws.cell(row = loggedInRow, column = 6).value = lrlEntry.get()
         ws.cell(row = loggedInRow, column = 7).value = urlEntry.get()
         ws.cell(row = loggedInRow, column = 8).value = atrialAmpEntry.get()
@@ -330,6 +325,9 @@ class mainPage(tk.Frame):
         self.controller = controller
         label = tk.Label(self, text="WELCOME TO THE PACEMAKER PORTAL", font=controller.title_font).grid(row = 0, column = 0, columnspan = 5)
 
+
+        global loggedInRow
+        print(loggedInRow)
 
         #Page Navigation
         logoutButton = tk.Button(self, text="Logout",
@@ -373,6 +371,7 @@ class mainPage(tk.Frame):
         global vrpEntry
         global arpEntry
 
+
         lrlEntry = tk.Entry(self, width=5, disabledbackground='grey')
         lrlEntry.insert(0, '120')
         lrlEntry.grid(row = 15,column = 2)
@@ -390,6 +389,10 @@ class mainPage(tk.Frame):
         vrpEntry.grid(row = 17,column = 6, padx = 1, pady = 1)
         arpEntry = tk.Entry(self, width=5, disabledbackground='grey')
         arpEntry.grid(row = 18,column = 6, padx = 1, pady = 1)
+
+
+
+        lrlEntry.insert('end', ws.cell(row = loggedInRow, column = 6).value) #issue with this line, doesnt seem to fetch global variable value for some reason
 
         buttonSave = tk.Button(self, text="Save", command = self.Save)
         buttonSave.grid(row = 19, column = 6, padx = 5, pady = 5)
