@@ -2,8 +2,8 @@ import tkinter as tk                # python 3
 from tkinter import font  as tkfont # python 3
 import openpyxl
 import os
+import time
 
-loggedInRow = 1
 
 # opening the existing excel file
 filename = 'userdata.xlsx'
@@ -311,25 +311,36 @@ class mainPage(tk.Frame):
 
     def Save(self):
 
-        ws.cell(row = loggedInRow, column = 6).value = lrlEntry.get()
-        ws.cell(row = loggedInRow, column = 7).value = urlEntry.get()
-        ws.cell(row = loggedInRow, column = 8).value = atrialAmpEntry.get()
-        ws.cell(row = loggedInRow, column = 9).value = atrialPWEntry.get()
-        ws.cell(row = loggedInRow, column = 10).value = venAmpEntry.get()
-        ws.cell(row = loggedInRow, column = 11).value = venPWEntry.get()
-        ws.cell(row = loggedInRow, column = 12).value = vrpEntry.get()
-        ws.cell(row = loggedInRow, column = 13).value = arpEntry.get()
+        ws.cell(row = self._loggedInRow, column = 6).value = lrlEntry.get()
+        ws.cell(row = self._loggedInRow, column = 7).value = urlEntry.get()
+        ws.cell(row = self._loggedInRow, column = 8).value = atrialAmpEntry.get()
+        ws.cell(row = self._loggedInRow, column = 9).value = atrialPWEntry.get()
+        ws.cell(row = self._loggedInRow, column = 10).value = venAmpEntry.get()
+        ws.cell(row = self._loggedInRow, column = 11).value = venPWEntry.get()
+        ws.cell(row = self._loggedInRow, column = 12).value = vrpEntry.get()
+        ws.cell(row = self._loggedInRow, column = 13).value = arpEntry.get()
         wb.save(filename)
 
     def populateUserData(self):
-        lrlEntry.insert('end', ws.cell(row = self._loggedInRow, column = 6).value if type(ws.cell(row = self._loggedInRow, column = 6).value) == int else 0)
-        urlEntry.insert('end', ws.cell(row = self._loggedInRow, column = 7).value if type(ws.cell(row = self._loggedInRow, column = 7).value) == int else 0)
-        atrialAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 8).value if type(ws.cell(row = self._loggedInRow, column = 8).value) == int else 0)
-        atrialPWEntry.insert('end', ws.cell(row = self._loggedInRow, column = 9).value if type(ws.cell(row = self._loggedInRow, column = 9).value) == int else 0)
-        venAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 10).value if type(ws.cell(row = self._loggedInRow, column = 10).value) == int else 0)
-        venPWEntry.insert('end', ws.cell(row = self._loggedInRow, column = 11).value if type(ws.cell(row = self._loggedInRow, column = 11).value) == int else 0)
-        vrpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 12).value if type(ws.cell(row = self._loggedInRow, column = 12).value) == int else 0)
-        arpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 13).value if type(ws.cell(row = self._loggedInRow, column = 13).value) == int else 0)
+
+        #Clear any data that might exist
+        lrlEntry.delete(0, 'end')
+        urlEntry.delete(0, 'end')
+        atrialAmpEntry.delete(0, 'end')
+        atrialPWEntry.delete(0, 'end')
+        venAmpEntry.delete(0, 'end')
+        venPWEntry.delete(0, 'end')
+        vrpEntry.delete(0, 'end')
+        arpEntry.delete(0, 'end')
+        
+        lrlEntry.insert(0, ws.cell(row = self._loggedInRow, column = 6).value if type(ws.cell(row = self._loggedInRow, column = 6).value) == str else 0)
+        urlEntry.insert('end', ws.cell(row = self._loggedInRow, column = 7).value if type(ws.cell(row = self._loggedInRow, column = 7).value) == str else 0)
+        atrialAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 8).value if type(ws.cell(row = self._loggedInRow, column = 8).value) == str else 0)
+        atrialPWEntry.insert('end', ws.cell(row = self._loggedInRow, column = 9).value if type(ws.cell(row = self._loggedInRow, column = 9).value) == str else 0)
+        venAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 10).value if type(ws.cell(row = self._loggedInRow, column = 10).value) == str else 0)
+        venPWEntry.insert('end', ws.cell(row = self._loggedInRow, column = 11).value if type(ws.cell(row = self._loggedInRow, column = 11).value) == str else 0)
+        vrpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 12).value if type(ws.cell(row = self._loggedInRow, column = 12).value) == str else 0)
+        arpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 13).value if type(ws.cell(row = self._loggedInRow, column = 13).value) == str else 0)
 
     def setLoggedInRow(self, row):
         self._loggedInRow = row
@@ -343,7 +354,7 @@ class mainPage(tk.Frame):
 
         #Page Navigation
         logoutButton = tk.Button(self, text="Logout",
-                           command=lambda: controller.current_frame)
+                           command=lambda: controller.show_frame('welcomePage'))
         logoutButton.grid(row = 20, column = 3, padx = 5, pady = 5)
 
         #Pacing Modes
@@ -403,7 +414,7 @@ class mainPage(tk.Frame):
         arpEntry.grid(row = 18,column = 6, padx = 1, pady = 1)
 
 
-        buttonSave = tk.Button(self, text="Save", command = self)
+        buttonSave = tk.Button(self, text="Save", command = self.Save)
         buttonSave.grid(row = 19, column = 6, padx = 5, pady = 5)
 
     
