@@ -46,7 +46,7 @@ class pacemaker(tk.Tk):
 
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold")
 
-    
+
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
         # will be raised above the others
@@ -74,7 +74,7 @@ class pacemaker(tk.Tk):
         frame = self.frames[page_name]
         frame.tkraise()
 
-        
+
 class welcomePage(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -202,6 +202,9 @@ class loginPage(tk.Frame):
             if ws.cell(row = i, column = 4).value == usernameLabelEntryLogin.get():
                 rowMatchPassword = i
                 break
+            else:
+                wrongLogin = tk.Label(self, text="Username password combination incorrect!").grid(row = 2, column = 2)
+
 
         if ws.cell(row = rowMatchPassword, column = 5).value == passwordLabelEntryLogin.get():
             loggedInRow = rowMatchPassword
@@ -330,7 +333,7 @@ class mainPage(tk.Frame):
         venPWEntry.delete(0, 'end')
         vrpEntry.delete(0, 'end')
         arpEntry.delete(0, 'end')
-        
+
         lrlEntry.insert(0, ws.cell(row = self._loggedInRow, column = 6).value if type(ws.cell(row = self._loggedInRow, column = 6).value) == str else 0)
         urlEntry.insert('end', ws.cell(row = self._loggedInRow, column = 7).value if type(ws.cell(row = self._loggedInRow, column = 7).value) == str else 0)
         atrialAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 8).value if type(ws.cell(row = self._loggedInRow, column = 8).value) == str else 0)
@@ -343,7 +346,7 @@ class mainPage(tk.Frame):
     def setLoggedInRow(self, row):
         self._loggedInRow = row
         self.populateUserData()
-        
+
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -415,7 +418,7 @@ class mainPage(tk.Frame):
         buttonSave = tk.Button(self, text="Save", command = self.Save)
         buttonSave.grid(row = 19, column = 6, padx = 5, pady = 5)
 
-    
+
 
 if __name__ == "__main__":
     app = pacemaker()
