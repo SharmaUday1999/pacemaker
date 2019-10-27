@@ -3,7 +3,7 @@ from tkinter import font  as tkfont # python 3
 import openpyxl
 import os
 
-loggedInRow = 0
+loggedInRow = 1
 
 # opening the existing excel file
 filename = 'userdata.xlsx'
@@ -48,6 +48,9 @@ class pacemaker(tk.Tk):
 
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold")
 
+        
+        self.currentFrame = '';
+        print('initing')
         # the container is where we'll stack a bunch of frames
         # on top of each other, then the one we want visible
         # will be raised above the others
@@ -58,7 +61,7 @@ class pacemaker(tk.Tk):
 
 
         self.frames = {}
-        for F in (welcomePage, registerPage, loginPage, mainPage, aooPage, vooPage, aaiPage, vviPage):
+        for F in (welcomePage, registerPage, loginPage, mainPage):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -74,6 +77,17 @@ class pacemaker(tk.Tk):
         '''Show a frame for the given page name'''
         frame = self.frames[page_name]
         frame.tkraise()
+        self.currentFrame = page_name
+        print(self.currentFrame)
+
+    def current_frame(self):
+        print (self.currentFrame)
+        return self.currentFrame
+    
+    def update_frame(self, page_name):
+        frame = self.frames[page_name]
+        frame.update()
+        
 
 
 class welcomePage(tk.Frame):
@@ -206,11 +220,12 @@ class loginPage(tk.Frame):
                 break
 
         if ws.cell(row = rowMatchPassword, column = 5).value == passwordLabelEntryLogin.get():
-            global loggedInRow
             loggedInRow = rowMatchPassword
             self.controller.show_frame('mainPage')
             usernameLabelEntryLogin.delete(0,'end')
             passwordLabelEntryLogin.delete(0,'end')
+            mainPage.setLoggedInRow(self.controller.frames['mainPage'], loggedInRow)
+            print (loggedInRow)
 
         #implement incorrect login text
 
@@ -241,6 +256,7 @@ class loginPage(tk.Frame):
 
 class mainPage(tk.Frame):
     _state = 'none'
+    # TODO: Should move this into a separate module, it's just an object storing constants
     _params = {
         'LOWER_RATE_LIMIT' : {
             'AOO': 'normal',
@@ -297,6 +313,7 @@ class mainPage(tk.Frame):
         #Change state and fields depending on which pacing mode is selected. Default none
 
         self._state = mode
+        self._loggedInRow = 1
 
         lrlEntry.configure(state= self._params['LOWER_RATE_LIMIT'][mode])
         urlEntry.configure(state= self._params['UPPER_RATE_LIMIT'][mode])
@@ -306,6 +323,8 @@ class mainPage(tk.Frame):
         venPWEntry.configure(state= self._params['VENTRICULAR_PULSE_WIDTH'][mode])
         vrpEntry.configure(state= self._params['VRP'][mode])
         arpEntry.configure(state= self._params['ARP'][mode])
+
+        controller.current_frame()
 
     def Save(self):
         print(loggedInRow)
@@ -320,6 +339,23 @@ class mainPage(tk.Frame):
         ws.cell(row = loggedInRow, column = 13).value = arpEntry.get()
         wb.save(filename)
 
+    def populateUserData(self):
+        print('populating')
+        print(self._loggedInRow)
+        lrlEntry.insert('end', ws.cell(row = self._loggedInRow, column = 6).value if type(ws.cell(row = self._loggedInRow, column = 6).value) == int else 0)
+        urlEntry.insert('end', ws.cell(row = self._loggedInRow, column = 7).value if type(ws.cell(row = self._loggedInRow, column = 7).value) == int else 0)
+        atrialAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 8).value if type(ws.cell(row = self._loggedInRow, column = 8).value) == int else 0)
+        atrialPWEntry.insert('end', ws.cell(row = self._loggedInRow, column = 9).value if type(ws.cell(row = self._loggedInRow, column = 9).value) == int else 0)
+        venAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 10).value if type(ws.cell(row = self._loggedInRow, column = 10).value) == int else 0)
+        venPWEntry.insert('end', ws.cell(row = self._loggedInRow, column = 11).value if type(ws.cell(row = self._loggedInRow, column = 11).value) == int else 0)
+        vrpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 12).value if type(ws.cell(row = self._loggedInRow, column = 12).value) == int else 0)
+        arpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 13).value if type(ws.cell(row = self._loggedInRow, column = 13).value) == int else 0)
+
+    def setLoggedInRow(self, row):
+        self._loggedInRow = row
+        self.populateUserData()
+        
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -331,11 +367,12 @@ class mainPage(tk.Frame):
 
         #Page Navigation
         logoutButton = tk.Button(self, text="Logout",
-                           command=lambda: controller.show_frame("welcomePage"))
+                           command=lambda: controller.current_frame)
         logoutButton.grid(row = 20, column = 3, padx = 5, pady = 5)
 
+        #Pacing Modes
         aooButton = tk.Button(self, text="AOO",
-                           command=lambda: self.setMode('AOO'))
+                           command=lambda: controller.update_frame('mainPage'))
         aooButton.grid(row = 10, column = 0, padx = 5, pady = 5)
 
         vooButton = tk.Button(self, text="VOO",
@@ -373,7 +410,6 @@ class mainPage(tk.Frame):
 
 
         lrlEntry = tk.Entry(self, width=5, disabledbackground='grey')
-        lrlEntry.insert(0, '120')
         lrlEntry.grid(row = 15,column = 2)
         urlEntry = tk.Entry(self, width=5, disabledbackground='grey')
         urlEntry.grid(row = 16,column = 2, padx = 1, pady = 1)
@@ -391,69 +427,10 @@ class mainPage(tk.Frame):
         arpEntry.grid(row = 18,column = 6, padx = 1, pady = 1)
 
 
-
-        lrlEntry.insert('end', ws.cell(row = loggedInRow, column = 6).value) #issue with this line, doesnt seem to fetch global variable value for some reason
-
-        buttonSave = tk.Button(self, text="Save", command = self.Save)
+        buttonSave = tk.Button(self, text="Save", command = self)
         buttonSave.grid(row = 19, column = 6, padx = 5, pady = 5)
 
-class aooPage(tk.Frame):
-
-    def __init__(self,parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        label = tk.Label(self, text="AOO Pacing Mode", font=controller.title_font).grid(row = 0, column = 0)
-
-
-        mainButton = tk.Button(self, text="Main Menu",
-                           command=lambda: controller.show_frame("mainPage"))
-        mainButton.grid(row = 12, column = 0, padx = 5, pady = 5)
-        logoutButton = tk.Button(self, text="Logout",
-                           command=lambda: controller.show_frame("welcomePage"))
-        logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
-
-class vooPage(tk.Frame):
-
-    def __init__(self,parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        label = tk.Label(self, text="VOO Pacing Mode", font=controller.title_font).grid(row = 0, column = 0)
-
-        mainButton = tk.Button(self, text="Main Menu",
-                           command=lambda: controller.show_frame("mainPage"))
-        mainButton.grid(row = 12, column = 0, padx = 5, pady = 5)
-        logoutButton = tk.Button(self, text="Logout",
-                           command=lambda: controller.show_frame("welcomePage"))
-        logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
-
-class aaiPage(tk.Frame):
-
-    def __init__(self,parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        label = tk.Label(self, text="AAI Pacing Mode", font=controller.title_font).grid(row = 0, column = 0)
-
-        mainButton = tk.Button(self, text="Main Menu",
-                           command=lambda: controller.show_frame("mainPage"))
-        mainButton.grid(row = 12, column = 0, padx = 5, pady = 5)
-        logoutButton = tk.Button(self, text="Logout",
-                           command=lambda: controller.show_frame("welcomePage"))
-        logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
-
-class vviPage(tk.Frame):
-
-    def __init__(self,parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        label = tk.Label(self, text="VVI Pacing Mode", font=controller.title_font).grid(row = 0, column = 0)
-
-        mainButton = tk.Button(self, text="Main Menu",
-                           command=lambda: controller.show_frame("mainPage"))
-        mainButton.grid(row = 12, column = 0, padx = 5, pady = 5)
-        logoutButton = tk.Button(self, text="Logout",
-                           command=lambda: controller.show_frame("welcomePage"))
-        logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
-
+    
 
 if __name__ == "__main__":
     app = pacemaker()
