@@ -16,7 +16,11 @@ else:
 # create the sheet object
 ws = wb.active
 
-if (ws['A1'] == 'First name') and (ws['B1'] == 'Last Name') and (ws['C1'] == 'Email') and (ws['D1'] == 'Username')  and (ws['E1'] == 'Password') :
+
+# TODO: We should iterate over an array and fill each column instead in the future (when/if we have time)
+if ((ws['A1'] == 'First name') and (ws['B1'] == 'Last Name') and (ws['C1'] == 'Email') and (ws['D1'] == 'Username')  and (ws['E1'] == 'Password')
+    and (ws['F1'] == 'Lower Rate Limit') and (ws['G1'] == 'Upper Rate Limit') and (ws['H1'] == 'Atrial Amplitude') and (ws['I1'] == 'Atrial Pulse Width')
+    and (ws['J1'] == 'Ventricular Amplitude') and (ws['K1'] == 'Ventricular Pulse Width') and (ws['L1'] == 'VRP') and (ws['M1'] == 'ARP')):
     pass
 else:
     ws['A1'] = 'First name'
@@ -24,6 +28,14 @@ else:
     ws['C1'] = 'Email'
     ws['D1'] = 'Username'
     ws['E1'] = 'Password'
+    ws['F1'] = 'Lower Rate Limit'
+    ws['G1'] = 'Upper Rate Limit'
+    ws['H1'] = 'Atrial Amplitude'
+    ws['I1'] = 'Atrial Pulse Width'
+    ws['J1'] = 'Ventricular Amplitude'
+    ws['K1'] = 'Ventricular Pulse Width'
+    ws['L1'] = 'VRP'
+    ws['M1'] = 'ARP'
 wb.save(filename)
 
 
@@ -45,7 +57,7 @@ class pacemaker(tk.Tk):
 
 
         self.frames = {}
-        for F in (welcomePage, registerPage, loginPage, mainPortal):
+        for F in (welcomePage, registerPage, loginPage, mainPage, aooPage, vooPage, aaiPage, vviPage):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -193,10 +205,11 @@ class loginPage(tk.Frame):
                 break
 
         if ws.cell(row = rowMatchPassword, column = 5).value == passwordLabelEntryLogin.get():
-            self.controller.show_frame('mainPortal')
+            self.controller.show_frame('mainPage')
             usernameLabelEntryLogin.delete(0,'end')
             passwordLabelEntryLogin.delete(0,'end')
         #implement incorrect login text
+        username = usernameLabelEntryLogin.get()
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -218,21 +231,203 @@ class loginPage(tk.Frame):
         buttonLogin = tk.Button(self, text="Login", command = self.login)
         buttonLogin.grid(row = 6, column = 0, padx = 5, pady = 5)
 
-        buttonReturn = tk.Button(self, text="Return to main menu",
+        buttonReturn = tk.Button(self, text="Return to welcome page",
                            command=lambda: controller.show_frame("welcomePage"))
         buttonReturn.grid(row = 6, column = 1, padx = 5, pady = 5)
 
-class mainPortal(tk.Frame):
+class mainPage(tk.Frame):
+    _state = 'none'
+    _params = {
+        'LOWER_RATE_LIMIT' : {
+            'AOO': 'normal',
+            'VOO': 'normal',
+            'AAI' : 'normal',
+            'VVI' : 'normal'
+            },
+        'UPPER_RATE_LIMIT' : {
+            'AOO': 'normal',
+            'VOO': 'normal',
+            'AAI' : 'normal',
+            'VVI' : 'normal'
+            },
+        'ATRIAL_AMPLITUDE' : {
+            'AOO': 'normal',
+            'VOO': 'disabled',
+            'AAI' : 'normal',
+            'VVI' : 'disabled'
+            },
+        'ATRIAL_PULSE_WIDTH': {
+            'AOO': 'normal',
+            'VOO': 'disabled',
+            'AAI' : 'normal',
+            'VVI' : 'disabled'
+            },
+        'VENTRICULAR_AMPLITUDE': {
+            'AOO': 'disabled',
+            'VOO': 'normal',
+            'AAI' : 'disabled',
+            'VVI' : 'normal'
+            },
+        'VENTRICULAR_PULSE_WIDTH': {
+            'AOO': 'disabled',
+            'VOO': 'normal',
+            'AAI' : 'disabled',
+            'VVI' : 'normal'
+            },
+        'VRP' : {
+            'AOO': 'disabled',
+            'VOO': 'disabled',
+            'AAI' : 'disabled',
+            'VVI' : 'normal'
+            },
+        'ARP' : {
+            'AOO': 'disabled',
+            'VOO': 'disabled',
+            'AAI' : 'normal',
+            'VVI' : 'disabled'
+            }
+        }
+
+
+    def setMode(self, mode):
+        #Change state and fields depending on which pacing mode is selected. Default none
+
+        self._state = mode
+        
+        lrlEntry.configure(state= self._params['LOWER_RATE_LIMIT'][mode])
+        urlEntry.configure(state= self._params['UPPER_RATE_LIMIT'][mode])
+        atrialAmpEntry.configure(state= self._params['ATRIAL_AMPLITUDE'][mode])
+        atrialPWEntry.configure(state= self._params['ATRIAL_PULSE_WIDTH'][mode])
+        venAmpEntry.configure(state= self._params['VENTRICULAR_AMPLITUDE'][mode])
+        venPWEntry.configure(state= self._params['VENTRICULAR_PULSE_WIDTH'][mode])
+        vrpEntry.configure(state= self._params['VRP'][mode])
+        arpEntry.configure(state= self._params['ARP'][mode])
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        label = tk.Label(self, text="WELCOME TO THE PACEMAKER PORTAL", font=controller.title_font).grid(row = 0, column = 0)
+        label = tk.Label(self, text="WELCOME TO THE PACEMAKER PORTAL", font=controller.title_font).grid(row = 0, column = 0, columnspan = 5)
 
 
+        #Page Navigation
         logoutButton = tk.Button(self, text="Logout",
                            command=lambda: controller.show_frame("welcomePage"))
-        logoutButton.grid(row = 12, column = 0, padx = 5, pady = 5)
+        logoutButton.grid(row = 20, column = 3, padx = 5, pady = 5)
+
+        aooButton = tk.Button(self, text="AOO",
+                           command=lambda: self.setMode('AOO'))
+        aooButton.grid(row = 10, column = 0, padx = 5, pady = 5)
+
+        vooButton = tk.Button(self, text="VOO",
+                           command=lambda: self.setMode('VOO'))
+        vooButton.grid(row = 10, column = 2, padx = 5, pady = 5)
+
+        aaiButton = tk.Button(self, text="AAI",
+                           command=lambda: self.setMode('AAI'))
+        aaiButton.grid(row = 10, column = 4, padx = 5, pady = 5)
+
+        vviButton = tk.Button(self, text="VVI",
+                           command=lambda: self.setMode('VVI'))
+        vviButton.grid(row = 10, column = 6, padx = 5, pady = 5)
+
+
+        #Pacing Mode Parameters
+        lrlLabel = tk.Label(self ,text = "Lower Rate Limit",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
+        urlLabel = tk.Label(self ,text = "Upper Rate Limit").grid(row = 16,column = 0, padx = 1, pady = 1, columnspan=2)
+        atrialAmpLabel = tk.Label(self ,text = "Atrial Amplitude").grid(row = 17,column = 0, padx = 1, pady = 1, columnspan=2)
+        atrialPWLabel = tk.Label(self ,text = "Atrial Pulse Width").grid(row = 18,column = 0, padx = 1, pady = 1, columnspan=2)
+        venAmpLabel = tk.Label(self ,text = "Ventricular Amplitude").grid(row = 15,column = 3, padx = 1, pady = 1, columnspan=2)
+        venPWLabel = tk.Label(self ,text = "Ventricular Pulse Width",).grid(row = 16,column = 3, padx = 1, pady = 1, columnspan=2)
+        vrpLabel = tk.Label(self ,text = "VRP",).grid(row = 17,column = 3, padx = 1, pady = 3, columnspan=2)
+        arpLabel = tk.Label(self ,text = "ARP",).grid(row = 18,column = 3, padx = 1, pady = 3, columnspan=2)
+        
+
+        global lrlEntry
+        global urlEntry
+        global atrialAmpEntry
+        global atrialPWEntry
+        global venAmpEntry
+        global venPWEntry
+        global vrpEntry
+        global arpEntry
+        
+        lrlEntry = tk.Entry(self, width=5, disabledbackground='grey')
+        lrlEntry.insert(0, '120')
+        lrlEntry.grid(row = 15,column = 2)
+        urlEntry = tk.Entry(self, width=5, disabledbackground='grey')
+        urlEntry.grid(row = 16,column = 2, padx = 1, pady = 1)
+        atrialAmpEntry = tk.Entry(self, width=5, disabledbackground='grey')
+        atrialAmpEntry.grid(row = 17,column = 2, padx = 1, pady = 1)
+        atrialPWEntry = tk.Entry(self, width=5, disabledbackground='grey')
+        atrialPWEntry.grid(row = 18,column = 2, padx = 1, pady = 1)
+        venAmpEntry = tk.Entry(self, width=5, disabledbackground='grey')
+        venAmpEntry.grid(row = 15,column = 6, padx = 1, pady = 1)
+        venPWEntry = tk.Entry(self, width=5, disabledbackground='grey')
+        venPWEntry.grid(row = 16,column = 6, padx = 1, pady = 1)
+        vrpEntry = tk.Entry(self, width=5, disabledbackground='grey')
+        vrpEntry.grid(row = 17,column = 6, padx = 1, pady = 1)
+        arpEntry = tk.Entry(self, width=5, disabledbackground='grey')
+        arpEntry.grid(row = 18,column = 6, padx = 1, pady = 1)
+
+        buttonRegister = tk.Button(self, text="Save")
+        buttonRegister.grid(row = 19, column = 6, padx = 5, pady = 5)
+
+class aooPage(tk.Frame):
+    
+    def __init__(self,parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="AOO Pacing Mode", font=controller.title_font).grid(row = 0, column = 0)
+
+
+        mainButton = tk.Button(self, text="Main Menu",
+                           command=lambda: controller.show_frame("mainPage"))
+        mainButton.grid(row = 12, column = 0, padx = 5, pady = 5)
+        logoutButton = tk.Button(self, text="Logout",
+                           command=lambda: controller.show_frame("welcomePage"))
+        logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
+
+class vooPage(tk.Frame):
+    
+    def __init__(self,parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="VOO Pacing Mode", font=controller.title_font).grid(row = 0, column = 0)
+
+        mainButton = tk.Button(self, text="Main Menu",
+                           command=lambda: controller.show_frame("mainPage"))
+        mainButton.grid(row = 12, column = 0, padx = 5, pady = 5)
+        logoutButton = tk.Button(self, text="Logout",
+                           command=lambda: controller.show_frame("welcomePage"))
+        logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
+
+class aaiPage(tk.Frame):
+    
+    def __init__(self,parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="AAI Pacing Mode", font=controller.title_font).grid(row = 0, column = 0)
+
+        mainButton = tk.Button(self, text="Main Menu",
+                           command=lambda: controller.show_frame("mainPage"))
+        mainButton.grid(row = 12, column = 0, padx = 5, pady = 5)
+        logoutButton = tk.Button(self, text="Logout",
+                           command=lambda: controller.show_frame("welcomePage"))
+        logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
+
+class vviPage(tk.Frame):
+    
+    def __init__(self,parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        label = tk.Label(self, text="VVI Pacing Mode", font=controller.title_font).grid(row = 0, column = 0)
+
+        mainButton = tk.Button(self, text="Main Menu",
+                           command=lambda: controller.show_frame("mainPage"))
+        mainButton.grid(row = 12, column = 0, padx = 5, pady = 5)
+        logoutButton = tk.Button(self, text="Logout",
+                           command=lambda: controller.show_frame("welcomePage"))
+        logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
 
 
 if __name__ == "__main__":
