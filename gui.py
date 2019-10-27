@@ -4,6 +4,12 @@ import openpyxl
 import os
 
 
+global loggedInUser
+global loggedInRow
+
+loggedInUser = 0
+loggedInRow = 0
+
 # opening the existing excel file
 filename = 'userdata.xlsx'
 
@@ -205,11 +211,15 @@ class loginPage(tk.Frame):
                 break
 
         if ws.cell(row = rowMatchPassword, column = 5).value == passwordLabelEntryLogin.get():
+            global loggedInRow
+            loggedInRow = rowMatchPassword
+
             self.controller.show_frame('mainPage')
             usernameLabelEntryLogin.delete(0,'end')
             passwordLabelEntryLogin.delete(0,'end')
+
         #implement incorrect login text
-        username = usernameLabelEntryLogin.get()
+
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -293,7 +303,7 @@ class mainPage(tk.Frame):
         #Change state and fields depending on which pacing mode is selected. Default none
 
         self._state = mode
-        
+
         lrlEntry.configure(state= self._params['LOWER_RATE_LIMIT'][mode])
         urlEntry.configure(state= self._params['UPPER_RATE_LIMIT'][mode])
         atrialAmpEntry.configure(state= self._params['ATRIAL_AMPLITUDE'][mode])
@@ -302,6 +312,18 @@ class mainPage(tk.Frame):
         venPWEntry.configure(state= self._params['VENTRICULAR_PULSE_WIDTH'][mode])
         vrpEntry.configure(state= self._params['VRP'][mode])
         arpEntry.configure(state= self._params['ARP'][mode])
+
+    def Save(self):
+        print(loggedInRow)
+        ws.cell(row = loggedInRow, column = 6).value = lrlEntry.get()
+        ws.cell(row = loggedInRow, column = 7).value = urlEntry.get()
+        ws.cell(row = loggedInRow, column = 8).value = atrialAmpEntry.get()
+        ws.cell(row = loggedInRow, column = 9).value = atrialPWEntry.get()
+        ws.cell(row = loggedInRow, column = 10).value = venAmpEntry.get()
+        ws.cell(row = loggedInRow, column = 11).value = venPWEntry.get()
+        ws.cell(row = loggedInRow, column = 12).value = vrpEntry.get()
+        ws.cell(row = loggedInRow, column = 13).value = arpEntry.get()
+        wb.save(filename)
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -340,7 +362,7 @@ class mainPage(tk.Frame):
         venPWLabel = tk.Label(self ,text = "Ventricular Pulse Width",).grid(row = 16,column = 3, padx = 1, pady = 1, columnspan=2)
         vrpLabel = tk.Label(self ,text = "VRP",).grid(row = 17,column = 3, padx = 1, pady = 3, columnspan=2)
         arpLabel = tk.Label(self ,text = "ARP",).grid(row = 18,column = 3, padx = 1, pady = 3, columnspan=2)
-        
+
 
         global lrlEntry
         global urlEntry
@@ -350,7 +372,7 @@ class mainPage(tk.Frame):
         global venPWEntry
         global vrpEntry
         global arpEntry
-        
+
         lrlEntry = tk.Entry(self, width=5, disabledbackground='grey')
         lrlEntry.insert(0, '120')
         lrlEntry.grid(row = 15,column = 2)
@@ -369,11 +391,11 @@ class mainPage(tk.Frame):
         arpEntry = tk.Entry(self, width=5, disabledbackground='grey')
         arpEntry.grid(row = 18,column = 6, padx = 1, pady = 1)
 
-        buttonRegister = tk.Button(self, text="Save")
-        buttonRegister.grid(row = 19, column = 6, padx = 5, pady = 5)
+        buttonSave = tk.Button(self, text="Save", command = self.Save)
+        buttonSave.grid(row = 19, column = 6, padx = 5, pady = 5)
 
 class aooPage(tk.Frame):
-    
+
     def __init__(self,parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -388,7 +410,7 @@ class aooPage(tk.Frame):
         logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
 
 class vooPage(tk.Frame):
-    
+
     def __init__(self,parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -402,7 +424,7 @@ class vooPage(tk.Frame):
         logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
 
 class aaiPage(tk.Frame):
-    
+
     def __init__(self,parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
@@ -416,7 +438,7 @@ class aaiPage(tk.Frame):
         logoutButton.grid(row = 13, column = 0, padx = 5, pady = 5)
 
 class vviPage(tk.Frame):
-    
+
     def __init__(self,parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
