@@ -112,7 +112,7 @@ class registerPage(tk.Frame):
             # in an excel sheet to the variable
             current_row = ws.max_row
             current_column = ws.max_column
-
+            global duplicateUsernameToggle
             duplicateUsernameToggle = 0
 
             for i in range(1,current_row+1):
@@ -120,10 +120,25 @@ class registerPage(tk.Frame):
                     duplicateUsernameToggle = 1
                     break
 
+
+            print(current_row)
             # get method returns current text
             # as string which we write into
             # excel spreadsheet at particular location
-            if duplicateUsernameToggle == 0:
+
+            if current_row == 11:
+                regLabel = tk.Label(self, text = "")
+                regLabel = tk.Label(self, text = "Max user limit reached!")
+                regLabel.grid(row = 2, column = 4)
+
+                # clear the content of text entry box
+                firstnameLabelEntry.delete(0, 'end')
+                lastnameLabelEntry.delete(0, 'end')
+                emailLabelEntry.delete(0, 'end')
+                usernameLabelEntry.delete(0, 'end')
+                passwordLabelEntry.delete(0, 'end')
+
+            elif duplicateUsernameToggle == 0 :
 
                 ws.cell(row=current_row + 1, column=1).value = firstnameLabelEntry.get()
                 ws.cell(row=current_row + 1, column=2).value = lastnameLabelEntry.get()
@@ -144,7 +159,8 @@ class registerPage(tk.Frame):
                 regLabel = tk.Label(self, text = "")
                 regLabel = tk.Label(self, text = "You have been registered!")
                 regLabel.grid(row = 2, column = 4)
-            else:
+                
+            elif duplicateUsernameToggle == 1:
                 regLabel = tk.Label(self, text = "")
                 regLabel = tk.Label(self, text = "Username not available!")
                 regLabel.grid(row = 2, column = 4)
@@ -155,6 +171,8 @@ class registerPage(tk.Frame):
                 emailLabelEntry.delete(0, 'end')
                 usernameLabelEntry.delete(0, 'end')
                 passwordLabelEntry.delete(0, 'end')
+                duplicateUsernameToggle == 0
+
 
 
 
