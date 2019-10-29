@@ -96,6 +96,8 @@ class welcomePage(tk.Frame):
 class registerPage(tk.Frame):
 
     def saveData(self):
+        global regLabel
+
         if (firstnameLabelEntry.get() == "" or
             lastnameLabelEntry.get() == "" or
             emailLabelEntry.get() == "" or
