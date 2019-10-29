@@ -159,7 +159,7 @@ class registerPage(tk.Frame):
                 regLabel = tk.Label(self, text = "")
                 regLabel = tk.Label(self, text = "You have been registered!")
                 regLabel.grid(row = 2, column = 4)
-                
+
             elif duplicateUsernameToggle == 1:
                 regLabel = tk.Label(self, text = "")
                 regLabel = tk.Label(self, text = "Username not available!")
@@ -330,14 +330,23 @@ class mainPage(tk.Frame):
 
     def Save(self):
 
-        ws.cell(row = self._loggedInRow, column = 6).value = lrlEntry.get()
-        ws.cell(row = self._loggedInRow, column = 7).value = urlEntry.get()
-        ws.cell(row = self._loggedInRow, column = 8).value = atrialAmpEntry.get()
-        ws.cell(row = self._loggedInRow, column = 9).value = atrialPWEntry.get()
-        ws.cell(row = self._loggedInRow, column = 10).value = venAmpEntry.get()
-        ws.cell(row = self._loggedInRow, column = 11).value = venPWEntry.get()
-        ws.cell(row = self._loggedInRow, column = 12).value = vrpEntry.get()
-        ws.cell(row = self._loggedInRow, column = 13).value = arpEntry.get()
+        global errorLabel
+
+        if (float(lrlEntry.get()) >= float(30) and float(lrlEntry.get()) <=float(175)) and (float(urlEntry.get()) >= 50.0 and float(urlEntry.get()) <=175.0) and (float(atrialAmpEntry.get()) >= 0.5 and float(atrialAmpEntry.get()) <= 7.0) and (float(atrialPWEntry.get()) == 0.05 or float(atrialPWEntry.get()) >=0.1 and float(atrialPWEntry.get())<= 1.9) and (float(venAmpEntry.get()) >= 0.5 and float(venAmpEntry.get()) <=7.0) and (float(venPWEntry.get()) == 0.05 or float(venPWEntry.get()) >=0.1 and venPWEntry.get()<= 1.9) and (float(vrpEntry.get()) >= 150.0 and float(vrpEntry.get()) <=500.0) and  (float(arpEntry.get()) >= 150.0 and float(arpEntry.get()) <=500.0):
+            ws.cell(row = self._loggedInRow, column = 6).value = lrlEntry.get()
+            ws.cell(row = self._loggedInRow, column = 7).value = urlEntry.get()
+            ws.cell(row = self._loggedInRow, column = 8).value = atrialAmpEntry.get()
+            ws.cell(row = self._loggedInRow, column = 9).value = atrialPWEntry.get()
+            ws.cell(row = self._loggedInRow, column = 10).value = venAmpEntry.get()
+            ws.cell(row = self._loggedInRow, column = 11).value = venPWEntry.get()
+            ws.cell(row = self._loggedInRow, column = 12).value = vrpEntry.get()
+            ws.cell(row = self._loggedInRow, column = 13).value = arpEntry.get()
+            errorLabel = tk.Label(self ,text = "Values Saved",)
+            errorLabel.grid(row = 19, column = 3, padx = 5, pady = 5)
+        else:
+            errorLabel = tk.Label(self ,text = "Error in values",)
+            errorLabel.grid(row = 19, column = 3, padx = 5, pady = 5)
+
         wb.save(filename)
 
     def populateUserData(self):
