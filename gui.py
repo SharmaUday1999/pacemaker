@@ -45,6 +45,7 @@ class pacemaker(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold")
+        self.geometry("1000x300")
 
 
         # the container is where we'll stack a bunch of frames
@@ -313,6 +314,108 @@ class mainPage(tk.Frame):
             'VVI' : 'disabled'
             }
         }
+    _paramBoundaries = {
+        'LRL' : {
+            'min' : 30.0,
+            'max' : 170.0,
+            'exception': 30.0,
+            },
+        'URL' : {
+            'min' : 50.0,
+            'max' : 175.0,
+            'exception': 50.0,
+            },    
+        'atrialAmp' : {
+            'min' : 0.5,
+            'max' : 7.0,
+            'exception': 0.5,
+            }, 
+        'atrialPW' : {
+            'min' : 0.1,
+            'max' : 1.9,
+            'exception': 0.05,
+            },    
+        'venAmp' : {
+            'min' : 0.5,
+            'max' : 7.0,
+            'exception': 0.5,
+            },  
+        'venPW' : {
+            'min' : 0.1,
+            'max' : 1.9,
+            'exception': 0.05,
+            }, 
+        'VRP' : {
+            'min' : 150.0,
+            'max' : 500.0,
+            'exception': 150.0,
+            }, 
+        'ARP' : {
+            'min' : 150,
+            'max' : 500,
+            'exception': 150.0,
+            },               
+    }
+
+    def _onTouch(self, event):
+        
+        lrlValue = float(lrlEntry.get())
+        urlValue = float(urlEntry.get())
+        atrialAmpValue = float(atrialAmpEntry.get())
+        atrialPWValue = float(atrialPWEntry.get())
+        venAmpValue = float(venAmpEntry.get())
+        venPWValue = float(venPWEntry.get())
+        vrpValue = float(vrpEntry.get())
+        arpValue = float(arpEntry.get())
+
+
+        if (lrlValue >= self._paramBoundaries['LRL']['min'] and lrlValue <= self._paramBoundaries['LRL']['max'] or lrlValue == self._paramBoundaries['LRL']['exception']) :
+            # ws.cell(row = self._loggedInRow, column = 6).value = lrlEntry.get()
+            lrlEntry.configure({'background' : 'white'})
+        else :
+            lrlEntry.configure({'background' : '#ff6b6b'})
+
+        if (urlValue >= self._paramBoundaries['URL']['min'] and urlValue <= self._paramBoundaries['URL']['max'] or urlValue == self._paramBoundaries['URL']['exception']) :
+            # ws.cell(row = self._loggedInRow, column = 7).value = urlEntry.get() #FIX THIS FOR ALL
+            urlEntry.configure({'background' : 'white'})
+        else :
+            urlEntry.configure({'background' : '#ff6b6b'})
+
+        if (atrialAmpValue >= self._paramBoundaries['atrialAmp']['min'] and atrialAmpValue <= self._paramBoundaries['atrialAmp']['max'] or atrialAmpValue == self._paramBoundaries['atrialAmp']['exception']) :
+            # ws.cell(row = self._loggedInRow, column = 8).value = atrialAmpEntry.get()
+            atrialAmpEntry.configure({'background' : 'white'})
+        else :
+            atrialAmpEntry.configure({'background' : '#ff6b6b'})
+
+        if (atrialPWValue >= self._paramBoundaries['atrialPW']['min'] and atrialPWValue <= self._paramBoundaries['atrialPW']['max'] or atrialPWValue == self._paramBoundaries['atrialPW']['exception']) :
+            # ws.cell(row = self._loggedInRow, column = 9).value = atrialPWEntry.get()
+            atrialPWEntry.configure({'background' : 'white'})
+        else :
+            atrialPWEntry.configure({'background' : '#ff6b6b'})
+
+        if (venAmpValue >= self._paramBoundaries['venAmp']['min'] and venAmpValue <= self._paramBoundaries['venAmp']['max'] or venAmpValue == self._paramBoundaries['venAmp']['exception']) :
+            # ws.cell(row = self._loggedInRow, column = 6).value = venAmpEntry.get()
+            venAmpEntry.configure({'background' : 'white'})
+        else :
+            venAmpEntry.configure({'background' : '#ff6b6b'})
+
+        if (venPWValue >= self._paramBoundaries['venPW']['min'] and venPWValue <= self._paramBoundaries['venPW']['max'] or venPWValue == self._paramBoundaries['venPW']['exception']) :
+            # ws.cell(row = self._loggedInRow, column = 6).value = venPWEntry.get()
+            venPWEntry.configure({'background' : 'white'})
+        else :
+            venPWEntry.configure({'background' : '#ff6b6b'})
+
+        if (vrpValue >= self._paramBoundaries['VRP']['min'] and vrpValue <= self._paramBoundaries['VRP']['max'] or vrpValue == self._paramBoundaries['VRP']['exception']) :
+            # ws.cell(row = self._loggedInRow, column = 6).value = vrpEntry.get()
+            vrpEntry.configure({'background' : 'white'})
+        else :
+            vrpEntry.configure({'background' : '#ff6b6b'})
+
+        if (arpValue >= self._paramBoundaries['ARP']['min'] and arpValue <= self._paramBoundaries['ARP']['max'] or arpValue == self._paramBoundaries['ARP']['exception']) :
+            # ws.cell(row = self._loggedInRow, column = 6).value = arpEntry.get()
+            arpEntry.configure({'background' : 'white'})
+        else :
+            arpEntry.configure({'background' : '#ff6b6b'})            
 
 
     def setMode(self, mode):
@@ -329,12 +432,15 @@ class mainPage(tk.Frame):
         venPWEntry.configure(state= self._params['VENTRICULAR_PULSE_WIDTH'][mode])
         vrpEntry.configure(state= self._params['VRP'][mode])
         arpEntry.configure(state= self._params['ARP'][mode])
+        # This is ugly, but .set didn't seem to work
+        selectedLabel = tk.Label(self ,text = mode).grid(row = 19,column = 1)
 
     def Save(self):
 
         global errorLabel
+        
 
-        if (float(lrlEntry.get()) >= float(30) and float(lrlEntry.get()) <=float(175)) and (float(urlEntry.get()) >= 50.0 and float(urlEntry.get()) <=175.0) and (float(atrialAmpEntry.get()) >= 0.5 and float(atrialAmpEntry.get()) <= 7.0) and (float(atrialPWEntry.get()) == 0.05 or float(atrialPWEntry.get()) >=0.1 and float(atrialPWEntry.get())<= 1.9) and (float(venAmpEntry.get()) >= 0.5 and float(venAmpEntry.get()) <=7.0) and (float(venPWEntry.get()) == 0.05 or float(venPWEntry.get()) >=0.1 and venPWEntry.get()<= 1.9) and (float(vrpEntry.get()) >= 150.0 and float(vrpEntry.get()) <=500.0) and  (float(arpEntry.get()) >= 150.0 and float(arpEntry.get()) <=500.0):
+        if (float(lrlEntry.get()) >= float(30) and float(lrlEntry.get()) <=float(175)) and (float(urlEntry.get()) >= 50.0 and float(urlEntry.get()) <=175.0) and (float(atrialAmpEntry.get()) >= 0.5 and float(atrialAmpEntry.get()) <= 7.0) and (float(atrialPWEntry.get()) == 0.05 or float(atrialPWEntry.get()) >=0.1 and float(atrialPWEntry.get())<= 1.9) and (float(venAmpEntry.get()) >= 0.5 and float(venAmpEntry.get()) <=7.0) and (float(venPWEntry.get()) == 0.05 or float(venPWEntry.get()) >=0.1 and float(venPWEntry.get())<= 1.9) and (float(vrpEntry.get()) >= 150.0 and float(vrpEntry.get()) <=500.0) and  (float(arpEntry.get()) >= 150.0 and float(arpEntry.get()) <=500.0):
             ws.cell(row = self._loggedInRow, column = 6).value = lrlEntry.get()
             ws.cell(row = self._loggedInRow, column = 7).value = urlEntry.get()
             ws.cell(row = self._loggedInRow, column = 8).value = atrialAmpEntry.get()
@@ -382,12 +488,16 @@ class mainPage(tk.Frame):
         self.controller = controller
         label = tk.Label(self, text="WELCOME TO THE PACEMAKER PORTAL", font=controller.title_font).grid(row = 0, column = 0, columnspan = 5)
 
+        
         #Page Navigation
         logoutButton = tk.Button(self, text="Logout",
                            command=lambda: controller.show_frame('welcomePage'))
         logoutButton.grid(row = 20, column = 3, padx = 5, pady = 5)
 
         #Pacing Modes
+        stateLabel = tk.Label(self ,text = "State").grid(row = 19,column = 0)
+        selectedLabel = tk.Label(self ,text = "None").grid(row = 19,column = 1)
+
         aooButton = tk.Button(self, text="AOO",
                            command=lambda: self.setMode('AOO'))
         aooButton.grid(row = 10, column = 0, padx = 5, pady = 5)
@@ -406,14 +516,14 @@ class mainPage(tk.Frame):
 
 
         #Pacing Mode Parameters
-        lrlLabel = tk.Label(self ,text = "Lower Rate Limit",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
-        urlLabel = tk.Label(self ,text = "Upper Rate Limit").grid(row = 16,column = 0, padx = 1, pady = 1, columnspan=2)
-        atrialAmpLabel = tk.Label(self ,text = "Atrial Amplitude").grid(row = 17,column = 0, padx = 1, pady = 1, columnspan=2)
-        atrialPWLabel = tk.Label(self ,text = "Atrial Pulse Width").grid(row = 18,column = 0, padx = 1, pady = 1, columnspan=2)
-        venAmpLabel = tk.Label(self ,text = "Ventricular Amplitude").grid(row = 15,column = 3, padx = 1, pady = 1, columnspan=2)
-        venPWLabel = tk.Label(self ,text = "Ventricular Pulse Width",).grid(row = 16,column = 3, padx = 1, pady = 1, columnspan=2)
-        vrpLabel = tk.Label(self ,text = "VRP",).grid(row = 17,column = 3, padx = 1, pady = 3, columnspan=2)
-        arpLabel = tk.Label(self ,text = "ARP",).grid(row = 18,column = 3, padx = 1, pady = 3, columnspan=2)
+        lrlLabel = tk.Label(self ,text = "Lower Rate Limit (ppm): 30 - 175",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
+        urlLabel = tk.Label(self ,text = "Upper Rate Limit (ppm): 50 - 175").grid(row = 16,column = 0, padx = 1, pady = 1, columnspan=2)
+        atrialAmpLabel = tk.Label(self ,text = "Atrial Amplitude (V): 0.5 - 7.0").grid(row = 17,column = 0, padx = 1, pady = 1, columnspan=2)
+        atrialPWLabel = tk.Label(self ,text = "Atrial Pulse Width (ms): 0.05 or 0.1 - 1.9").grid(row = 18,column = 0, padx = 1, pady = 1, columnspan=2)
+        venAmpLabel = tk.Label(self ,text = "Ventricular Amplitude (V): 0.5 - 7.0").grid(row = 15,column = 4, padx = 1, pady = 1, columnspan=2)
+        venPWLabel = tk.Label(self ,text = "Ventricular Pulse Width (ms): 0.05 or 0.1 - 1.9",).grid(row = 16,column = 4, padx = 1, pady = 1, columnspan=2)
+        vrpLabel = tk.Label(self ,text = "VRP (ms): 150 - 500",).grid(row = 17,column = 4, padx = 1, pady = 1, columnspan=2)
+        arpLabel = tk.Label(self ,text = "ARP (ms): 150 - 500",).grid(row = 18,column = 4, padx = 1, pady = 1, columnspan=2)
 
 
         global lrlEntry
@@ -435,14 +545,23 @@ class mainPage(tk.Frame):
         atrialPWEntry = tk.Entry(self, width=5, disabledbackground='grey')
         atrialPWEntry.grid(row = 18,column = 2, padx = 1, pady = 1)
         venAmpEntry = tk.Entry(self, width=5, disabledbackground='grey')
-        venAmpEntry.grid(row = 15,column = 6, padx = 1, pady = 1)
+        venAmpEntry.grid(row = 15,column = 7, padx = 1, pady = 1)
         venPWEntry = tk.Entry(self, width=5, disabledbackground='grey')
-        venPWEntry.grid(row = 16,column = 6, padx = 1, pady = 1)
+        venPWEntry.grid(row = 16,column = 7, padx = 1, pady = 1)
         vrpEntry = tk.Entry(self, width=5, disabledbackground='grey')
-        vrpEntry.grid(row = 17,column = 6, padx = 1, pady = 1)
+        vrpEntry.grid(row = 17,column = 7, padx = 1, pady = 1)
         arpEntry = tk.Entry(self, width=5, disabledbackground='grey')
-        arpEntry.grid(row = 18,column = 6, padx = 1, pady = 1)
+        arpEntry.grid(row = 18,column = 7, padx = 1, pady = 1)
 
+        lrlEntry.bind('<FocusOut>', self._onTouch)
+        urlEntry.bind('<FocusOut>', self._onTouch)
+        atrialAmpEntry.bind('<FocusOut>', self._onTouch)
+        atrialPWEntry.bind('<FocusOut>', self._onTouch)
+        venAmpEntry.bind('<FocusOut>', self._onTouch)
+        venPWEntry.bind('<FocusOut>', self._onTouch)
+        vrpEntry.bind('<FocusOut>', self._onTouch)
+        arpEntry.bind('<FocusOut>', self._onTouch)
+        #lrlEntry.pack()
 
         buttonSave = tk.Button(self, text="Save", command = self.Save)
         buttonSave.grid(row = 19, column = 6, padx = 5, pady = 5)
