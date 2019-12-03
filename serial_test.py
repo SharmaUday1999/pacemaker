@@ -1,7 +1,9 @@
-# example data
+import serial
+
+# get user-data (CSV) as list-object
 user_data = [150, 1.2, 0.05, 200, 300, 0.5, 0.5, 300]
 
-# change values to INDEX of param in CSV
+# PACEMAKER PARAMETERS
 KEY = 0xAA
 LOWER_RATE_LIMIT = 0
 ATRIAL_PULSE_WIDTH = 1
@@ -14,41 +16,47 @@ AV_DELAY = 7
 MESSAGE_LENGTH = 13
 STATE = 0x00
 
-# lower rate lim (conv to hex)
+# PACEMAKER SERIAL PARAMETERS
+BAUDRATE = 115200
+TIMEOUT = 5
+
+
+''' PARAMETER PROCESSING '''
+# lower rate lim
 def LRL(num):
-    return hex(num)
+    return num
 
-# atrial pulse width (conv to hex)
+# atrial pulse width
 def APW(num):
-    return hex(int(num*100))
+    return int(num*100)
 
-# ventricular pulse width (conv to hex)
+# ventricular pulse width
 def VPW(num):
-    return hex(int(num*100))
+    return int(num*100)
     
 # VRP (split into two summands)
 def fVRP(num):
     remainder = 1 if (num % 2 == 1) else 0
-    return [hex(num//2), hex(num//2 + remainder)][2:]
+    return [num//2, num//2 + remainder]
 
 # ARP
 def fARP(num):
     remainder = 1 if (num % 2 == 1) else 0
-    return [hex(num//2), hex(num//2 + remainder)]
+    return [num//2, num//2 + remainder]
 
 # atrial amplitude
 def AA(num):
-    return hex(int(num*10))
+    return int(num*10)
 
 # ventricular amplitude
 def VA(num):
-    return hex(int(num*10))
+    return int(num*10)
 
 # AV delay
 def AVD(num):
     remainder = 1 if (num % 2 == 1) else 0
-    summand1 = hex(int(num//2))
-    summand2 = hex(int(num//2) + remainder)
+    summand1 = int(num//2)
+    summand2 = int(num//2) + remainder
     return [summand1, summand2]
 
 output = [0x00] * MESSAGE_LENGTH
@@ -66,6 +74,20 @@ output[10] = VA(user_data[VENTRICULAR_AMPLITUDE])
 output[11] = AVD(user_data[AV_DELAY])[0]
 output[12] = AVD(user_data[AV_DELAY])[1]
 
-print(output)
 
+
+''' SERIAL SETUP '''
+def connect(port_name):
+    try:
+        ser = serial.Serial()
+        ser.port = port_name
+        ser.baudrate = BAUDRATE
+        ser.timeout = TIMEOUT
+        return ser
+    except:
+        return None
+    
+print(output)
+portname = '/dev/cu.usbmodem0000001234561'
+ser = connect(portname)
 
