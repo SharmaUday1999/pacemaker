@@ -3,6 +3,7 @@ from tkinter import font  as tkfont # python 3
 import openpyxl
 import os
 import uuid 
+import serial
 
 # opening the existing excel file
 filename = 'userCreds.xlsx'
@@ -17,6 +18,22 @@ else:
 ws = wb.active
 wsUser = None
 userFile = None
+
+# PACEMAKER PARAMETERS
+KEY = 200
+LOWER_RATE_LIMIT = 0
+ATRIAL_PULSE_WIDTH = 4
+VENTRICULAR_PULSE_WIDTH = 6
+VRP = 7
+ARP = 8
+ATRIAL_AMPLITUDE = 3
+VENTRICULAR_AMPLITUDE = 5
+AV_DELAY = 2
+MESSAGE_LENGTH = 13
+
+# PACEMAKER SERIAL PARAMETERS
+BAUDRATE = 115200
+TIMEOUT = 5
 
 
 # TODO: We should iterate over an array and fill each column instead in the future (when/if we have time)
@@ -281,6 +298,13 @@ class loginPage(tk.Frame):
 class mainPage(tk.Frame):
     _state = 'none'
     # TODO: Should move this into a separate module, it's just an object storing constants
+    _pacingModes = {
+        'AOO' : 0,
+        'VOO' : 1,
+        'AAI' : 2,
+        'VVI' : 3,
+        'DOO' : 4,
+    }
     _params = {
         'LOWER_RATE_LIMIT' : {
             'AOO': 'normal',
@@ -523,15 +547,104 @@ class mainPage(tk.Frame):
         vrpEntry.insert('end', wsUser.cell(row = 2, column = 8).value if type(wsUser.cell(row = 2, column = 8).value) == str else 0)
         arpEntry.insert('end', wsUser.cell(row = 2, column = 9).value if type(wsUser.cell(row = 2, column = 9).value) == str else 0)
 
+        self.setMode('AOO')
+
     def setLoggedInRow(self, row):
         self._loggedInRow = row
         self.populateUserData()
 
-    def _connect(self):
-        print ("connect")
+    ''' PARAMETER PROCESSING '''
 
-    def _send(self) :
-        print("send")        
+    # lower rate lim
+    def LRL(self, num):
+        num = float(num)
+        return int(num)
+
+    # atrial pulse width
+    def APW(self, num):
+        num = float(num)
+        return int(num*100)
+
+    # ventricular pulse width
+    def VPW(self, num):
+        num = float(num)
+        return int(num*100)
+        
+    # VRP (split into two summands)
+    def fVRP(self, num):
+        num = float(num)
+        remainder = 1 if (num % 2 == 1) else 0
+        return [int(num//2), int(num//2 + remainder)]
+
+    # ARP
+    def fARP(self, num):
+        num = float(num)
+        remainder = 1 if (num % 2 == 1) else 0
+        return [int(num//2), int(num//2 + remainder)]
+
+    # atrial amplitude
+    def AA(self, num):
+        num = float(num)
+        return int(num*10)
+
+    # ventricular amplitude
+    def VA(self, num):
+        num = float(num)
+        return int(num*10)
+
+    # AV delay
+    def AVD(self, num):
+        num = float(num)
+        remainder = 1 if (num % 2 == 1) else 0
+        summand1 = int(num//2)
+        summand2 = int(num//2) + remainder
+        return [summand1, summand2]
+
+    
+    def _connect(self):
+        print('just press SEND')
+
+
+    def _send(self):
+        output = [0] * MESSAGE_LENGTH
+        output[0] = KEY
+        output[1] = self._pacingModes[self._state]
+        print (wsUser.cell(row = 2, column = ATRIAL_PULSE_WIDTH + 1).value)
+        print (wsUser.cell(row = 2, column = VENTRICULAR_PULSE_WIDTH + 1).value)
+        print (wsUser.cell(row = 2, column = VRP + 1).value)
+        print (wsUser.cell(row = 2, column = ARP + 1).value)
+        print (wsUser.cell(row = 2, column = ATRIAL_AMPLITUDE + 1).value)
+        print (wsUser.cell(row = 2, column = VENTRICULAR_AMPLITUDE + 1).value)
+        print (wsUser.cell(row = 2, column = AV_DELAY + 1).value)
+        output[2] = self.LRL(wsUser.cell(row = 2, column = LOWER_RATE_LIMIT + 1).value)
+        output[3] = self.APW(wsUser.cell(row = 2, column = ATRIAL_PULSE_WIDTH + 1).value)
+        output[4] = self.VPW(wsUser.cell(row = 2, column = VENTRICULAR_PULSE_WIDTH + 1).value)
+        output[5] = self.fVRP(wsUser.cell(row = 2, column = VRP + 1).value)[0]
+        output[6] = self.fVRP(wsUser.cell(row = 2, column = VRP + 1).value)[1]
+        output[7] = self.fARP(wsUser.cell(row = 2, column = ARP + 1).value)[0]
+        output[8] = self.fARP(wsUser.cell(row = 2, column = ARP + 1).value)[1]
+        output[9] = self.AA(wsUser.cell(row = 2, column = ATRIAL_AMPLITUDE + 1).value) 
+        output[10] = self.VA(wsUser.cell(row = 2, column = VENTRICULAR_AMPLITUDE + 1).value)
+        output[11] = self.AVD(wsUser.cell(row = 2, column = AV_DELAY + 1).value)[0]
+        output[12] = self.AVD(wsUser.cell(row = 2, column = AV_DELAY + 1).value)[1]
+        print(output)  
+        print('serial port:' + serPortEntry.get())
+        try:
+            
+            ser = serial.Serial(
+                
+                port = serPortEntry.get(),
+                baudrate = BAUDRATE,
+                timeout = TIMEOUT
+            )
+            ser.write(bytes(output))
+            print('data seeeent')
+            successLabel = tk.Label(self ,text = "Values sent", fg = "green")
+            successLabel.grid(row = 19, column = 3, padx = 5, pady = 5)
+        except:   
+            print("serial failure")
+            successLabel = tk.Label(self ,text = "Values did not send", fg = "red")
+            successLabel.grid(row = 19, column = 3, padx = 5, pady = 5)
 
 
     def __init__(self, parent, controller):
@@ -591,6 +704,7 @@ class mainPage(tk.Frame):
         global venPWEntry
         global vrpEntry
         global arpEntry
+        global serPortEntry
 
 
         lrlEntry = tk.Entry(self, width=5, disabledbackground='grey')
@@ -617,11 +731,10 @@ class mainPage(tk.Frame):
         serPortLabel = tk.Label(self ,text = "Port").grid(row = 22,column = 4)
         serPortEntry = tk.Entry(self, width=5)
         serPortEntry.grid(row = 22, column = 5)
+        serPortEntry.insert('end', '/dev/cu.usbmodem0000001234561')
         eightBitKeyLabel = tk.Label(self ,text = "8-bit key").grid(row = 22,column = 6)
         eightBitKeyEntry = tk.Entry(self, width=5)
         eightBitKeyEntry.grid(row = 22, column = 7)
-        connectButton = tk.Button(self, text="Connect", command= self._connect)
-        connectButton.grid(row = 22, column = 8)
         sendButton = tk.Button(self, text="Send", command= self._send)
         sendButton.grid(row = 22, column = 9)
 
