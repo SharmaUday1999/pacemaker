@@ -417,27 +417,27 @@ class mainPage(tk.Frame):
         else :
             urlEntry.configure({'background' : '#ff6b6b'})
 
-        if (avDelayValue >= self._paramBoundaries['avDelay']['min'] and avDelayValue <= self._paramBoundaries['avDelay']['max'] or avDelayValue == self._paramBoundaries['avDelay']['exception']) :et()
+        if (avDelayValue >= self._paramBoundaries['avDelay']['min'] and avDelayValue <= self._paramBoundaries['avDelay']['max'] or avDelayValue == self._paramBoundaries['avDelay']['exception']) :
             avDelayEntry.configure({'background' : 'white'})
         else :
             avDelayEntry.configure({'background' : '#ff6b6b'})
 
-        if (atrialAmpValue >= self._paramBoundaries['atrialAmp']['min'] and atrialAmpValue <= self._paramBoundaries['atrialAmp']['max'] or atrialAmpValue == self._paramBoundaries['atrialAmp']['exception']) :.get()
+        if (atrialAmpValue >= self._paramBoundaries['atrialAmp']['min'] and atrialAmpValue <= self._paramBoundaries['atrialAmp']['max'] or atrialAmpValue == self._paramBoundaries['atrialAmp']['exception']) :
             atrialAmpEntry.configure({'background' : 'white'})
         else :
             atrialAmpEntry.configure({'background' : '#ff6b6b'})
 
-        if (atrialPWValue >= self._paramBoundaries['atrialPW']['min'] and atrialPWValue <= self._paramBoundaries['atrialPW']['max'] or atrialPWValue == self._paramBoundaries['atrialPW']['exception']) :get()
+        if (atrialPWValue >= self._paramBoundaries['atrialPW']['min'] and atrialPWValue <= self._paramBoundaries['atrialPW']['max'] or atrialPWValue == self._paramBoundaries['atrialPW']['exception']) :
             atrialPWEntry.configure({'background' : 'white'})
         else :
             atrialPWEntry.configure({'background' : '#ff6b6b'})
 
-        if (venAmpValue >= self._paramBoundaries['venAmp']['min'] and venAmpValue <= self._paramBoundaries['venAmp']['max'] or venAmpValue == self._paramBoundaries['venAmp']['exception']) :t()
+        if (venAmpValue >= self._paramBoundaries['venAmp']['min'] and venAmpValue <= self._paramBoundaries['venAmp']['max'] or venAmpValue == self._paramBoundaries['venAmp']['exception']) :
             venAmpEntry.configure({'background' : 'white'})
         else :
             venAmpEntry.configure({'background' : '#ff6b6b'})
 
-        if (venPWValue >= self._paramBoundaries['venPW']['min'] and venPWValue <= self._paramBoundaries['venPW']['max'] or venPWValue == self._paramBoundaries['venPW']['exception']) :()
+        if (venPWValue >= self._paramBoundaries['venPW']['min'] and venPWValue <= self._paramBoundaries['venPW']['max'] or venPWValue == self._paramBoundaries['venPW']['exception']) :
             venPWEntry.configure({'background' : 'white'})
         else :
             venPWEntry.configure({'background' : '#ff6b6b'})
@@ -527,6 +527,12 @@ class mainPage(tk.Frame):
         self._loggedInRow = row
         self.populateUserData()
 
+    def _connect(self):
+        print ("connect")
+
+    def _send(self) :
+        print("send")        
+
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -614,9 +620,9 @@ class mainPage(tk.Frame):
         eightBitKeyLabel = tk.Label(self ,text = "8-bit key").grid(row = 22,column = 6)
         eightBitKeyEntry = tk.Entry(self, width=5)
         eightBitKeyEntry.grid(row = 22, column = 7)
-        connectButton = tk.Button(self, text="Connect")
+        connectButton = tk.Button(self, text="Connect", command= self._connect)
         connectButton.grid(row = 22, column = 8)
-        sendButton = tk.Button(self, text="Send")
+        sendButton = tk.Button(self, text="Send", command= self._send)
         sendButton.grid(row = 22, column = 9)
 
 
