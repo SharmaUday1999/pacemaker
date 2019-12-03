@@ -2,9 +2,10 @@ import tkinter as tk                # python 3
 from tkinter import font  as tkfont # python 3
 import openpyxl
 import os
+import uuid 
 
 # opening the existing excel file
-filename = 'userdata.xlsx'
+filename = 'userCreds.xlsx'
 
 if os.path.isfile(filename):
     wb = openpyxl.load_workbook(filename)
@@ -14,27 +15,17 @@ else:
 
 # create the sheet object
 ws = wb.active
+wsUser = None
+userFile = None
 
 
 # TODO: We should iterate over an array and fill each column instead in the future (when/if we have time)
-if ((ws['A1'] == 'First name') and (ws['B1'] == 'Last Name') and (ws['C1'] == 'Email') and (ws['D1'] == 'Username')  and (ws['E1'] == 'Password')
-    and (ws['F1'] == 'Lower Rate Limit') and (ws['G1'] == 'Upper Rate Limit') and (ws['H1'] == 'Atrial Amplitude') and (ws['I1'] == 'Atrial Pulse Width')
-    and (ws['J1'] == 'Ventricular Amplitude') and (ws['K1'] == 'Ventricular Pulse Width') and (ws['L1'] == 'VRP') and (ws['M1'] == 'ARP')):
+if ((ws['A1'] == 'Username') and (ws['B1'] == 'Password')):
     pass
 else:
-    ws['A1'] = 'First name'
-    ws['B1'] = 'Last name'
-    ws['C1'] = 'Email'
-    ws['D1'] = 'Username'
-    ws['E1'] = 'Password'
-    ws['F1'] = 'Lower Rate Limit'
-    ws['G1'] = 'Upper Rate Limit'
-    ws['H1'] = 'Atrial Amplitude'
-    ws['I1'] = 'Atrial Pulse Width'
-    ws['J1'] = 'Ventricular Amplitude'
-    ws['K1'] = 'Ventricular Pulse Width'
-    ws['L1'] = 'VRP'
-    ws['M1'] = 'ARP'
+    ws['A1'] = 'Username'
+    ws['B1'] = 'Password'
+    ws['C1'] = 'User Id'
 wb.save(filename)
 
 
@@ -123,8 +114,6 @@ class registerPage(tk.Frame):
                     duplicateUsernameToggle = 1
                     break
 
-
-            print(current_row)
             # get method returns current text
             # as string which we write into
             # excel spreadsheet at particular location
@@ -142,12 +131,10 @@ class registerPage(tk.Frame):
                 passwordLabelEntry.delete(0, 'end')
 
             elif duplicateUsernameToggle == 0 :
-
-                ws.cell(row=current_row + 1, column=1).value = firstnameLabelEntry.get()
-                ws.cell(row=current_row + 1, column=2).value = lastnameLabelEntry.get()
-                ws.cell(row=current_row + 1, column=3).value = emailLabelEntry.get()
-                ws.cell(row=current_row + 1, column=4).value = usernameLabelEntry.get()
-                ws.cell(row=current_row + 1, column=5).value = passwordLabelEntry.get()
+                ws.cell(row=current_row + 1, column=1).value = usernameLabelEntry.get()
+                ws.cell(row=current_row + 1, column=2).value = passwordLabelEntry.get()
+                uniqueId = uuid.uuid4().hex[:8]
+                ws.cell(row=current_row + 1, column=3).value = uniqueId
 
                 # save the file
                 wb.save(filename)
@@ -220,14 +207,43 @@ class loginPage(tk.Frame):
     def login(self):
         rowMatchPassword = 1
         for i in range(1,ws.max_row+1):
-            if ws.cell(row = i, column = 4).value == usernameLabelEntryLogin.get():
+            if ws.cell(row = i, column = 1).value == usernameLabelEntryLogin.get():
                 rowMatchPassword = i
                 break
             else:
                 wrongLogin = tk.Label(self, text="Username password combination incorrect!").grid(row = 2, column = 2)
 
 
-        if ws.cell(row = rowMatchPassword, column = 5).value == passwordLabelEntryLogin.get():
+        if ws.cell(row = rowMatchPassword, column = 2).value == passwordLabelEntryLogin.get():
+            
+            userId = ws.cell(row = rowMatchPassword, column = 3).value
+            global userFile
+            userFile = userId + '.xlsx'
+            if os.path.isfile(userFile):
+                wb = openpyxl.load_workbook(userFile)
+            else:
+                wb = openpyxl.Workbook()
+                wb.save(userFile)
+
+            # create the sheet object
+            global wsUser
+            wsUser = wb.active
+
+            
+            # TODO: We should iterate over an array and fill each column instead in the future (when/if we have time)
+            if ((wsUser['F1'] == 'Lower Rate Limit') and (wsUser['G1'] == 'Upper Rate Limit') and (wsUser['H1'] == 'Atrial Amplitude') and (wsUser['I1'] == 'Atrial Pulse Width')
+                and (wsUser['J1'] == 'Ventricular Amplitude') and (wsUser['K1'] == 'Ventricular Pulse Width') and (wsUser['L1'] == 'VRP') and (wsUser['M1'] == 'ARP')):
+                pass
+            else:
+                wsUser['A1'] = 'Lower Rate Limit'
+                wsUser['B1'] = 'Upper Rate Limit'
+                wsUser['C1'] = 'Atrial Amplitude'
+                wsUser['D1'] = 'Atrial Pulse Width'
+                wsUser['E1'] = 'Ventricular Amplitude'
+                wsUser['F1'] = 'Ventricular Pulse Width'
+                wsUser['G1'] = 'VRP'
+                wsUser['H1'] = 'ARP'
+            wb.save(userFile)    
             loggedInRow = rowMatchPassword
             self.controller.show_frame('mainPage')
             usernameLabelEntryLogin.delete(0,'end')
@@ -316,7 +332,7 @@ class mainPage(tk.Frame):
         }
     _paramBoundaries = {
         'LRL' : {
-            'min' : 30.0,
+            'min' : 50.0,
             'max' : 170.0,
             'exception': 30.0,
             },
@@ -438,24 +454,30 @@ class mainPage(tk.Frame):
     def Save(self):
 
         global errorLabel
-        
+    
+        if os.path.isfile(userFile):
+            wb = openpyxl.load_workbook(userFile)
+
+        # create the sheet object
+        wsUser = wb.active
 
         if (float(lrlEntry.get()) >= float(30) and float(lrlEntry.get()) <=float(175)) and (float(urlEntry.get()) >= 50.0 and float(urlEntry.get()) <=175.0) and (float(atrialAmpEntry.get()) >= 0.5 and float(atrialAmpEntry.get()) <= 7.0) and (float(atrialPWEntry.get()) == 0.05 or float(atrialPWEntry.get()) >=0.1 and float(atrialPWEntry.get())<= 1.9) and (float(venAmpEntry.get()) >= 0.5 and float(venAmpEntry.get()) <=7.0) and (float(venPWEntry.get()) == 0.05 or float(venPWEntry.get()) >=0.1 and float(venPWEntry.get())<= 1.9) and (float(vrpEntry.get()) >= 150.0 and float(vrpEntry.get()) <=500.0) and  (float(arpEntry.get()) >= 150.0 and float(arpEntry.get()) <=500.0):
-            ws.cell(row = self._loggedInRow, column = 6).value = lrlEntry.get()
-            ws.cell(row = self._loggedInRow, column = 7).value = urlEntry.get()
-            ws.cell(row = self._loggedInRow, column = 8).value = atrialAmpEntry.get()
-            ws.cell(row = self._loggedInRow, column = 9).value = atrialPWEntry.get()
-            ws.cell(row = self._loggedInRow, column = 10).value = venAmpEntry.get()
-            ws.cell(row = self._loggedInRow, column = 11).value = venPWEntry.get()
-            ws.cell(row = self._loggedInRow, column = 12).value = vrpEntry.get()
-            ws.cell(row = self._loggedInRow, column = 13).value = arpEntry.get()
+            wsUser.cell(row = 2, column = 1).value = lrlEntry.get()
+            wsUser.cell(row = 2, column = 2).value = urlEntry.get()
+            wsUser.cell(row = 2, column = 3).value = atrialAmpEntry.get()
+            wsUser.cell(row = 2, column = 4).value = atrialPWEntry.get()
+            wsUser.cell(row = 2, column = 5).value = venAmpEntry.get()
+            wsUser.cell(row = 2, column = 6).value = venPWEntry.get()
+            wsUser.cell(row = 2, column = 7).value = vrpEntry.get()
+            wsUser.cell(row = 2, column = 8).value = arpEntry.get()
             errorLabel = tk.Label(self ,text = "Values Saved",)
             errorLabel.grid(row = 19, column = 3, padx = 5, pady = 5)
         else:
             errorLabel = tk.Label(self ,text = "Error in values",)
             errorLabel.grid(row = 19, column = 3, padx = 5, pady = 5)
+        self._onTouch(None)
 
-        wb.save(filename)
+        wb.save(userFile)
 
     def populateUserData(self):
 
@@ -469,14 +491,14 @@ class mainPage(tk.Frame):
         vrpEntry.delete(0, 'end')
         arpEntry.delete(0, 'end')
 
-        lrlEntry.insert(0, ws.cell(row = self._loggedInRow, column = 6).value if type(ws.cell(row = self._loggedInRow, column = 6).value) == str else 0)
-        urlEntry.insert('end', ws.cell(row = self._loggedInRow, column = 7).value if type(ws.cell(row = self._loggedInRow, column = 7).value) == str else 0)
-        atrialAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 8).value if type(ws.cell(row = self._loggedInRow, column = 8).value) == str else 0)
-        atrialPWEntry.insert('end', ws.cell(row = self._loggedInRow, column = 9).value if type(ws.cell(row = self._loggedInRow, column = 9).value) == str else 0)
-        venAmpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 10).value if type(ws.cell(row = self._loggedInRow, column = 10).value) == str else 0)
-        venPWEntry.insert('end', ws.cell(row = self._loggedInRow, column = 11).value if type(ws.cell(row = self._loggedInRow, column = 11).value) == str else 0)
-        vrpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 12).value if type(ws.cell(row = self._loggedInRow, column = 12).value) == str else 0)
-        arpEntry.insert('end', ws.cell(row = self._loggedInRow, column = 13).value if type(ws.cell(row = self._loggedInRow, column = 13).value) == str else 0)
+        lrlEntry.insert(0, wsUser.cell(row = 2, column = 1).value if type(wsUser.cell(row = 2, column = 1).value) == str else 0)
+        urlEntry.insert('end', wsUser.cell(row = 2, column = 2).value if type(wsUser.cell(row = 2, column = 2).value) == str else 0)
+        atrialAmpEntry.insert('end', wsUser.cell(row = 2, column = 3).value if type(wsUser.cell(row = 2, column = 3).value) == str else 0)
+        atrialPWEntry.insert('end', wsUser.cell(row = 2, column = 4).value if type(wsUser.cell(row = 2, column = 4).value) == str else 0)
+        venAmpEntry.insert('end', wsUser.cell(row = 2, column = 5).value if type(wsUser.cell(row = 2, column = 5).value) == str else 0)
+        venPWEntry.insert('end', wsUser.cell(row = 2, column = 6).value if type(wsUser.cell(row = 2, column = 6).value) == str else 0)
+        vrpEntry.insert('end', wsUser.cell(row = 2, column = 7).value if type(wsUser.cell(row = 2, column = 7).value) == str else 0)
+        arpEntry.insert('end', wsUser.cell(row = 2, column = 8).value if type(wsUser.cell(row = 2, column = 8).value) == str else 0)
 
     def setLoggedInRow(self, row):
         self._loggedInRow = row
@@ -516,7 +538,7 @@ class mainPage(tk.Frame):
 
 
         #Pacing Mode Parameters
-        lrlLabel = tk.Label(self ,text = "Lower Rate Limit (ppm): 30 - 175",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
+        lrlLabel = tk.Label(self ,text = "Lower Rate Limit (ppm): 50 - 175",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
         urlLabel = tk.Label(self ,text = "Upper Rate Limit (ppm): 50 - 175").grid(row = 16,column = 0, padx = 1, pady = 1, columnspan=2)
         atrialAmpLabel = tk.Label(self ,text = "Atrial Amplitude (V): 0.5 - 7.0").grid(row = 17,column = 0, padx = 1, pady = 1, columnspan=2)
         atrialPWLabel = tk.Label(self ,text = "Atrial Pulse Width (ms): 0.05 or 0.1 - 1.9").grid(row = 18,column = 0, padx = 1, pady = 1, columnspan=2)
