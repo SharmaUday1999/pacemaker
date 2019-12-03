@@ -348,8 +348,8 @@ class mainPage(tk.Frame):
         }
     _paramBoundaries = {
         'LRL' : {
-            'min' : 50.0,
-            'max' : 170.0,
+            'min' : 30.0,
+            'max' : 175.0,
             'exception': 30.0,
             },
         'URL' : {
@@ -571,7 +571,7 @@ class mainPage(tk.Frame):
 
 
         #Pacing Mode Parameters
-        lrlLabel = tk.Label(self ,text = "Lower Rate Limit (ppm): 50 - 175",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
+        lrlLabel = tk.Label(self ,text = "Lower Rate Limit (ppm): 30 - 175",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
         urlLabel = tk.Label(self ,text = "Upper Rate Limit (ppm): 50 - 175").grid(row = 16,column = 0, padx = 1, pady = 1, columnspan=2)
         avDelayLabel = tk.Label(self ,text = "AV Delay (ms): 70 - 300",).grid(row = 17,column = 0, padx = 1, pady = 1, columnspan=2)
         atrialAmpLabel = tk.Label(self ,text = "Atrial Amplitude (V): 0.5 - 7.0").grid(row = 18,column = 0, padx = 1, pady = 1, columnspan=2)
