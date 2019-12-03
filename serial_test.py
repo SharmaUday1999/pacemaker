@@ -1,5 +1,5 @@
 # example data
-user_data = [150, 1.2, 1.3, 1.2, 1.4, 187, 200, 300]
+user_data = [150, 1.2, 0.05, 200, 300, 0.5, 0.5, 300]
 
 # change values to INDEX of param in CSV
 KEY = 0xAA
@@ -15,8 +15,8 @@ MESSAGE_LENGTH = 13
 STATE = 0x00
 
 # lower rate lim (conv to hex)
-def LRL(LOWER_RATE_LIMIT):
-    return hex(LOWER_RATE_LIMIT)
+def LRL(num):
+    return hex(num)
 
 # atrial pulse width (conv to hex)
 def APW(num):
@@ -29,16 +29,12 @@ def VPW(num):
 # VRP (split into two summands)
 def fVRP(num):
     remainder = 1 if (num % 2 == 1) else 0
-    summand1 = hex(int(num//2))
-    summand2 = hex(int(num//2) + remainder)
-    return [summand1, summand2]
+    return [hex(num//2), hex(num//2 + remainder)][2:]
 
 # ARP
 def fARP(num):
     remainder = 1 if (num % 2 == 1) else 0
-    summand1 = hex(int(num//2))
-    summand2 = hex(int(num//2) + remainder)
-    return [summand1, summand2]
+    return [hex(num//2), hex(num//2 + remainder)]
 
 # atrial amplitude
 def AA(num):
