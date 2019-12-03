@@ -408,55 +408,46 @@ class mainPage(tk.Frame):
 
 
         if (lrlValue >= self._paramBoundaries['LRL']['min'] and lrlValue <= self._paramBoundaries['LRL']['max'] or lrlValue == self._paramBoundaries['LRL']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = lrlEntry.get()
             lrlEntry.configure({'background' : 'white'})
         else :
             lrlEntry.configure({'background' : '#ff6b6b'})
 
-        if (urlValue >= self._paramBoundaries['URL']['min'] and urlValue <= self._paramBoundaries['URL']['max'] or urlValue == self._paramBoundaries['URL']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 7).value = urlEntry.get() #FIX THIS FOR ALL
+        if (urlValue >= self._paramBoundaries['URL']['min'] and urlValue <= self._paramBoundaries['URL']['max'] or urlValue == self._paramBoundaries['URL']['exception']) : #FIX THIS FOR ALL
             urlEntry.configure({'background' : 'white'})
         else :
             urlEntry.configure({'background' : '#ff6b6b'})
 
-        if (avDelayValue >= self._paramBoundaries['avDelay']['min'] and avDelayValue <= self._paramBoundaries['avDelay']['max'] or avDelayValue == self._paramBoundaries['avDelay']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 8).value = avDelayEntry.get()
+        if (avDelayValue >= self._paramBoundaries['avDelay']['min'] and avDelayValue <= self._paramBoundaries['avDelay']['max'] or avDelayValue == self._paramBoundaries['avDelay']['exception']) :et()
             avDelayEntry.configure({'background' : 'white'})
         else :
             avDelayEntry.configure({'background' : '#ff6b6b'})
 
-        if (atrialAmpValue >= self._paramBoundaries['atrialAmp']['min'] and atrialAmpValue <= self._paramBoundaries['atrialAmp']['max'] or atrialAmpValue == self._paramBoundaries['atrialAmp']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 8).value = atrialAmpEntry.get()
+        if (atrialAmpValue >= self._paramBoundaries['atrialAmp']['min'] and atrialAmpValue <= self._paramBoundaries['atrialAmp']['max'] or atrialAmpValue == self._paramBoundaries['atrialAmp']['exception']) :.get()
             atrialAmpEntry.configure({'background' : 'white'})
         else :
             atrialAmpEntry.configure({'background' : '#ff6b6b'})
 
-        if (atrialPWValue >= self._paramBoundaries['atrialPW']['min'] and atrialPWValue <= self._paramBoundaries['atrialPW']['max'] or atrialPWValue == self._paramBoundaries['atrialPW']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 9).value = atrialPWEntry.get()
+        if (atrialPWValue >= self._paramBoundaries['atrialPW']['min'] and atrialPWValue <= self._paramBoundaries['atrialPW']['max'] or atrialPWValue == self._paramBoundaries['atrialPW']['exception']) :get()
             atrialPWEntry.configure({'background' : 'white'})
         else :
             atrialPWEntry.configure({'background' : '#ff6b6b'})
 
-        if (venAmpValue >= self._paramBoundaries['venAmp']['min'] and venAmpValue <= self._paramBoundaries['venAmp']['max'] or venAmpValue == self._paramBoundaries['venAmp']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = venAmpEntry.get()
+        if (venAmpValue >= self._paramBoundaries['venAmp']['min'] and venAmpValue <= self._paramBoundaries['venAmp']['max'] or venAmpValue == self._paramBoundaries['venAmp']['exception']) :t()
             venAmpEntry.configure({'background' : 'white'})
         else :
             venAmpEntry.configure({'background' : '#ff6b6b'})
 
-        if (venPWValue >= self._paramBoundaries['venPW']['min'] and venPWValue <= self._paramBoundaries['venPW']['max'] or venPWValue == self._paramBoundaries['venPW']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = venPWEntry.get()
+        if (venPWValue >= self._paramBoundaries['venPW']['min'] and venPWValue <= self._paramBoundaries['venPW']['max'] or venPWValue == self._paramBoundaries['venPW']['exception']) :()
             venPWEntry.configure({'background' : 'white'})
         else :
             venPWEntry.configure({'background' : '#ff6b6b'})
 
         if (vrpValue >= self._paramBoundaries['VRP']['min'] and vrpValue <= self._paramBoundaries['VRP']['max'] or vrpValue == self._paramBoundaries['VRP']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = vrpEntry.get()
             vrpEntry.configure({'background' : 'white'})
         else :
             vrpEntry.configure({'background' : '#ff6b6b'})
 
         if (arpValue >= self._paramBoundaries['ARP']['min'] and arpValue <= self._paramBoundaries['ARP']['max'] or arpValue == self._paramBoundaries['ARP']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = arpEntry.get()
             arpEntry.configure({'background' : 'white'})
         else :
             arpEntry.configure({'background' : '#ff6b6b'})            
