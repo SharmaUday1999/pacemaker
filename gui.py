@@ -25,6 +25,7 @@ if ((ws['A1'] == 'Username') and (ws['B1'] == 'Password')):
 else:
     ws['A1'] = 'Username'
     ws['B1'] = 'Password'
+    ws['C1'] = 'User Id'
 wb.save(filename)
 
 
@@ -331,7 +332,7 @@ class mainPage(tk.Frame):
         }
     _paramBoundaries = {
         'LRL' : {
-            'min' : 30.0,
+            'min' : 50.0,
             'max' : 170.0,
             'exception': 30.0,
             },
@@ -537,7 +538,7 @@ class mainPage(tk.Frame):
 
 
         #Pacing Mode Parameters
-        lrlLabel = tk.Label(self ,text = "Lower Rate Limit (ppm): 30 - 175",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
+        lrlLabel = tk.Label(self ,text = "Lower Rate Limit (ppm): 50 - 175",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
         urlLabel = tk.Label(self ,text = "Upper Rate Limit (ppm): 50 - 175").grid(row = 16,column = 0, padx = 1, pady = 1, columnspan=2)
         atrialAmpLabel = tk.Label(self ,text = "Atrial Amplitude (V): 0.5 - 7.0").grid(row = 17,column = 0, padx = 1, pady = 1, columnspan=2)
         atrialPWLabel = tk.Label(self ,text = "Atrial Pulse Width (ms): 0.05 or 0.1 - 1.9").grid(row = 18,column = 0, padx = 1, pady = 1, columnspan=2)
