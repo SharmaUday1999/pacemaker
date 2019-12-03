@@ -231,18 +231,19 @@ class loginPage(tk.Frame):
 
             
             # TODO: We should iterate over an array and fill each column instead in the future (when/if we have time)
-            if ((wsUser['F1'] == 'Lower Rate Limit') and (wsUser['G1'] == 'Upper Rate Limit') and (wsUser['H1'] == 'Atrial Amplitude') and (wsUser['I1'] == 'Atrial Pulse Width')
-                and (wsUser['J1'] == 'Ventricular Amplitude') and (wsUser['K1'] == 'Ventricular Pulse Width') and (wsUser['L1'] == 'VRP') and (wsUser['M1'] == 'ARP')):
+            if ((wsUser['A1'] == 'Lower Rate Limit') and (wsUser['B1'] == 'Upper Rate Limit') and (wsUser['C1'] == 'AV Delay') and (wsUser['D1'] == 'Atrial Amplitude') and (wsUser['E1'] == 'Atrial Pulse Width')
+                and (wsUser['F1'] == 'Ventricular Amplitude') and (wsUser['G1'] == 'Ventricular Pulse Width') and (wsUser['H1'] == 'VRP') and (wsUser['I1'] == 'ARP')):
                 pass
             else:
                 wsUser['A1'] = 'Lower Rate Limit'
                 wsUser['B1'] = 'Upper Rate Limit'
-                wsUser['C1'] = 'Atrial Amplitude'
-                wsUser['D1'] = 'Atrial Pulse Width'
-                wsUser['E1'] = 'Ventricular Amplitude'
-                wsUser['F1'] = 'Ventricular Pulse Width'
-                wsUser['G1'] = 'VRP'
-                wsUser['H1'] = 'ARP'
+                wsUser['C1'] = 'AV Delay'
+                wsUser['D1'] = 'Atrial Amplitude'
+                wsUser['E1'] = 'Atrial Pulse Width'
+                wsUser['F1'] = 'Ventricular Amplitude'
+                wsUser['G1'] = 'Ventricular Pulse Width'
+                wsUser['H1'] = 'VRP'
+                wsUser['I1'] = 'ARP'
             wb.save(userFile)    
             loggedInRow = rowMatchPassword
             self.controller.show_frame('mainPage')
@@ -285,49 +286,64 @@ class mainPage(tk.Frame):
             'AOO': 'normal',
             'VOO': 'normal',
             'AAI' : 'normal',
-            'VVI' : 'normal'
+            'VVI' : 'normal',
+            'DOO' : 'normal'
             },
         'UPPER_RATE_LIMIT' : {
             'AOO': 'normal',
             'VOO': 'normal',
             'AAI' : 'normal',
-            'VVI' : 'normal'
+            'VVI' : 'normal',
+            'DOO' : 'normal'
             },
+        'FIXED_AV_DELAY' : {
+            'AOO': 'disabled',
+            'VOO': 'disabled',
+            'AAI' : 'disabled',
+            'VVI' : 'disabled',
+            'DOO' : 'normal'
+        },
         'ATRIAL_AMPLITUDE' : {
             'AOO': 'normal',
             'VOO': 'disabled',
             'AAI' : 'normal',
-            'VVI' : 'disabled'
+            'VVI' : 'disabled',
+            'DOO' : 'normal'
             },
         'ATRIAL_PULSE_WIDTH': {
             'AOO': 'normal',
             'VOO': 'disabled',
             'AAI' : 'normal',
-            'VVI' : 'disabled'
+            'VVI' : 'disabled',
+            'DOO' : 'normal'
             },
         'VENTRICULAR_AMPLITUDE': {
             'AOO': 'disabled',
             'VOO': 'normal',
             'AAI' : 'disabled',
-            'VVI' : 'normal'
+            'VVI' : 'normal',
+            'DOO' : 'normal'
             },
         'VENTRICULAR_PULSE_WIDTH': {
             'AOO': 'disabled',
             'VOO': 'normal',
             'AAI' : 'disabled',
-            'VVI' : 'normal'
-            },
+            'VVI' : 'normal',
+            'DOO' : 'normal'
+            },    
         'VRP' : {
             'AOO': 'disabled',
             'VOO': 'disabled',
             'AAI' : 'disabled',
-            'VVI' : 'normal'
+            'VVI' : 'normal',
+            'DOO' : 'disabled'
             },
         'ARP' : {
             'AOO': 'disabled',
             'VOO': 'disabled',
             'AAI' : 'normal',
-            'VVI' : 'disabled'
+            'VVI' : 'disabled',
+            'DOO' : 'disabled'
             }
         }
     _paramBoundaries = {
@@ -340,6 +356,11 @@ class mainPage(tk.Frame):
             'min' : 50.0,
             'max' : 175.0,
             'exception': 50.0,
+            },    
+        'avDelay' : {
+            'min' : 70.0,
+            'max' : 300.0,
+            'exception': 70.0
             },    
         'atrialAmp' : {
             'min' : 0.5,
@@ -377,6 +398,7 @@ class mainPage(tk.Frame):
         
         lrlValue = float(lrlEntry.get())
         urlValue = float(urlEntry.get())
+        avDelayValue = float(avDelayEntry.get())
         atrialAmpValue = float(atrialAmpEntry.get())
         atrialPWValue = float(atrialPWEntry.get())
         venAmpValue = float(venAmpEntry.get())
@@ -386,49 +408,46 @@ class mainPage(tk.Frame):
 
 
         if (lrlValue >= self._paramBoundaries['LRL']['min'] and lrlValue <= self._paramBoundaries['LRL']['max'] or lrlValue == self._paramBoundaries['LRL']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = lrlEntry.get()
             lrlEntry.configure({'background' : 'white'})
         else :
             lrlEntry.configure({'background' : '#ff6b6b'})
 
-        if (urlValue >= self._paramBoundaries['URL']['min'] and urlValue <= self._paramBoundaries['URL']['max'] or urlValue == self._paramBoundaries['URL']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 7).value = urlEntry.get() #FIX THIS FOR ALL
+        if (urlValue >= self._paramBoundaries['URL']['min'] and urlValue <= self._paramBoundaries['URL']['max'] or urlValue == self._paramBoundaries['URL']['exception']) : #FIX THIS FOR ALL
             urlEntry.configure({'background' : 'white'})
         else :
             urlEntry.configure({'background' : '#ff6b6b'})
 
-        if (atrialAmpValue >= self._paramBoundaries['atrialAmp']['min'] and atrialAmpValue <= self._paramBoundaries['atrialAmp']['max'] or atrialAmpValue == self._paramBoundaries['atrialAmp']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 8).value = atrialAmpEntry.get()
+        if (avDelayValue >= self._paramBoundaries['avDelay']['min'] and avDelayValue <= self._paramBoundaries['avDelay']['max'] or avDelayValue == self._paramBoundaries['avDelay']['exception']) :et()
+            avDelayEntry.configure({'background' : 'white'})
+        else :
+            avDelayEntry.configure({'background' : '#ff6b6b'})
+
+        if (atrialAmpValue >= self._paramBoundaries['atrialAmp']['min'] and atrialAmpValue <= self._paramBoundaries['atrialAmp']['max'] or atrialAmpValue == self._paramBoundaries['atrialAmp']['exception']) :.get()
             atrialAmpEntry.configure({'background' : 'white'})
         else :
             atrialAmpEntry.configure({'background' : '#ff6b6b'})
 
-        if (atrialPWValue >= self._paramBoundaries['atrialPW']['min'] and atrialPWValue <= self._paramBoundaries['atrialPW']['max'] or atrialPWValue == self._paramBoundaries['atrialPW']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 9).value = atrialPWEntry.get()
+        if (atrialPWValue >= self._paramBoundaries['atrialPW']['min'] and atrialPWValue <= self._paramBoundaries['atrialPW']['max'] or atrialPWValue == self._paramBoundaries['atrialPW']['exception']) :get()
             atrialPWEntry.configure({'background' : 'white'})
         else :
             atrialPWEntry.configure({'background' : '#ff6b6b'})
 
-        if (venAmpValue >= self._paramBoundaries['venAmp']['min'] and venAmpValue <= self._paramBoundaries['venAmp']['max'] or venAmpValue == self._paramBoundaries['venAmp']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = venAmpEntry.get()
+        if (venAmpValue >= self._paramBoundaries['venAmp']['min'] and venAmpValue <= self._paramBoundaries['venAmp']['max'] or venAmpValue == self._paramBoundaries['venAmp']['exception']) :t()
             venAmpEntry.configure({'background' : 'white'})
         else :
             venAmpEntry.configure({'background' : '#ff6b6b'})
 
-        if (venPWValue >= self._paramBoundaries['venPW']['min'] and venPWValue <= self._paramBoundaries['venPW']['max'] or venPWValue == self._paramBoundaries['venPW']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = venPWEntry.get()
+        if (venPWValue >= self._paramBoundaries['venPW']['min'] and venPWValue <= self._paramBoundaries['venPW']['max'] or venPWValue == self._paramBoundaries['venPW']['exception']) :()
             venPWEntry.configure({'background' : 'white'})
         else :
             venPWEntry.configure({'background' : '#ff6b6b'})
 
         if (vrpValue >= self._paramBoundaries['VRP']['min'] and vrpValue <= self._paramBoundaries['VRP']['max'] or vrpValue == self._paramBoundaries['VRP']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = vrpEntry.get()
             vrpEntry.configure({'background' : 'white'})
         else :
             vrpEntry.configure({'background' : '#ff6b6b'})
 
         if (arpValue >= self._paramBoundaries['ARP']['min'] and arpValue <= self._paramBoundaries['ARP']['max'] or arpValue == self._paramBoundaries['ARP']['exception']) :
-            # ws.cell(row = self._loggedInRow, column = 6).value = arpEntry.get()
             arpEntry.configure({'background' : 'white'})
         else :
             arpEntry.configure({'background' : '#ff6b6b'})            
@@ -442,6 +461,7 @@ class mainPage(tk.Frame):
 
         lrlEntry.configure(state= self._params['LOWER_RATE_LIMIT'][mode])
         urlEntry.configure(state= self._params['UPPER_RATE_LIMIT'][mode])
+        avDelayEntry.configure(state = self._params['FIXED_AV_DELAY'][mode])
         atrialAmpEntry.configure(state= self._params['ATRIAL_AMPLITUDE'][mode])
         atrialPWEntry.configure(state= self._params['ATRIAL_PULSE_WIDTH'][mode])
         venAmpEntry.configure(state= self._params['VENTRICULAR_AMPLITUDE'][mode])
@@ -449,7 +469,7 @@ class mainPage(tk.Frame):
         vrpEntry.configure(state= self._params['VRP'][mode])
         arpEntry.configure(state= self._params['ARP'][mode])
         # This is ugly, but .set didn't seem to work
-        selectedLabel = tk.Label(self ,text = mode).grid(row = 19,column = 1)
+        selectedLabel = tk.Label(self ,text = mode).grid(row = 22,column = 1)
 
     def Save(self):
 
@@ -464,12 +484,13 @@ class mainPage(tk.Frame):
         if (float(lrlEntry.get()) >= float(30) and float(lrlEntry.get()) <=float(175)) and (float(urlEntry.get()) >= 50.0 and float(urlEntry.get()) <=175.0) and (float(atrialAmpEntry.get()) >= 0.5 and float(atrialAmpEntry.get()) <= 7.0) and (float(atrialPWEntry.get()) == 0.05 or float(atrialPWEntry.get()) >=0.1 and float(atrialPWEntry.get())<= 1.9) and (float(venAmpEntry.get()) >= 0.5 and float(venAmpEntry.get()) <=7.0) and (float(venPWEntry.get()) == 0.05 or float(venPWEntry.get()) >=0.1 and float(venPWEntry.get())<= 1.9) and (float(vrpEntry.get()) >= 150.0 and float(vrpEntry.get()) <=500.0) and  (float(arpEntry.get()) >= 150.0 and float(arpEntry.get()) <=500.0):
             wsUser.cell(row = 2, column = 1).value = lrlEntry.get()
             wsUser.cell(row = 2, column = 2).value = urlEntry.get()
-            wsUser.cell(row = 2, column = 3).value = atrialAmpEntry.get()
-            wsUser.cell(row = 2, column = 4).value = atrialPWEntry.get()
-            wsUser.cell(row = 2, column = 5).value = venAmpEntry.get()
-            wsUser.cell(row = 2, column = 6).value = venPWEntry.get()
-            wsUser.cell(row = 2, column = 7).value = vrpEntry.get()
-            wsUser.cell(row = 2, column = 8).value = arpEntry.get()
+            wsUser.cell(row = 2, column = 3).value = avDelayEntry.get()
+            wsUser.cell(row = 2, column = 4).value = atrialAmpEntry.get()
+            wsUser.cell(row = 2, column = 5).value = atrialPWEntry.get()
+            wsUser.cell(row = 2, column = 6).value = venAmpEntry.get()
+            wsUser.cell(row = 2, column = 7).value = venPWEntry.get()
+            wsUser.cell(row = 2, column = 8).value = vrpEntry.get()
+            wsUser.cell(row = 2, column = 9).value = arpEntry.get()
             errorLabel = tk.Label(self ,text = "Values Saved",)
             errorLabel.grid(row = 19, column = 3, padx = 5, pady = 5)
         else:
@@ -484,6 +505,7 @@ class mainPage(tk.Frame):
         #Clear any data that might exist
         lrlEntry.delete(0, 'end')
         urlEntry.delete(0, 'end')
+        avDelayEntry.delete(0, 'end')
         atrialAmpEntry.delete(0, 'end')
         atrialPWEntry.delete(0, 'end')
         venAmpEntry.delete(0, 'end')
@@ -493,12 +515,13 @@ class mainPage(tk.Frame):
 
         lrlEntry.insert(0, wsUser.cell(row = 2, column = 1).value if type(wsUser.cell(row = 2, column = 1).value) == str else 0)
         urlEntry.insert('end', wsUser.cell(row = 2, column = 2).value if type(wsUser.cell(row = 2, column = 2).value) == str else 0)
-        atrialAmpEntry.insert('end', wsUser.cell(row = 2, column = 3).value if type(wsUser.cell(row = 2, column = 3).value) == str else 0)
-        atrialPWEntry.insert('end', wsUser.cell(row = 2, column = 4).value if type(wsUser.cell(row = 2, column = 4).value) == str else 0)
-        venAmpEntry.insert('end', wsUser.cell(row = 2, column = 5).value if type(wsUser.cell(row = 2, column = 5).value) == str else 0)
-        venPWEntry.insert('end', wsUser.cell(row = 2, column = 6).value if type(wsUser.cell(row = 2, column = 6).value) == str else 0)
-        vrpEntry.insert('end', wsUser.cell(row = 2, column = 7).value if type(wsUser.cell(row = 2, column = 7).value) == str else 0)
-        arpEntry.insert('end', wsUser.cell(row = 2, column = 8).value if type(wsUser.cell(row = 2, column = 8).value) == str else 0)
+        avDelayEntry.insert('end', wsUser.cell(row = 2, column = 3).value if type(wsUser.cell(row = 2, column = 3).value) == str else 0)
+        atrialAmpEntry.insert('end', wsUser.cell(row = 2, column = 4).value if type(wsUser.cell(row = 2, column = 4).value) == str else 0)
+        atrialPWEntry.insert('end', wsUser.cell(row = 2, column = 5).value if type(wsUser.cell(row = 2, column = 5).value) == str else 0)
+        venAmpEntry.insert('end', wsUser.cell(row = 2, column = 6).value if type(wsUser.cell(row = 2, column = 6).value) == str else 0)
+        venPWEntry.insert('end', wsUser.cell(row = 2, column = 7).value if type(wsUser.cell(row = 2, column = 7).value) == str else 0)
+        vrpEntry.insert('end', wsUser.cell(row = 2, column = 8).value if type(wsUser.cell(row = 2, column = 8).value) == str else 0)
+        arpEntry.insert('end', wsUser.cell(row = 2, column = 9).value if type(wsUser.cell(row = 2, column = 9).value) == str else 0)
 
     def setLoggedInRow(self, row):
         self._loggedInRow = row
@@ -517,8 +540,8 @@ class mainPage(tk.Frame):
         logoutButton.grid(row = 20, column = 3, padx = 5, pady = 5)
 
         #Pacing Modes
-        stateLabel = tk.Label(self ,text = "State").grid(row = 19,column = 0)
-        selectedLabel = tk.Label(self ,text = "None").grid(row = 19,column = 1)
+        stateLabel = tk.Label(self ,text = "State").grid(row = 22,column = 0)
+        selectedLabel = tk.Label(self ,text = "None").grid(row = 22,column = 1)
 
         aooButton = tk.Button(self, text="AOO",
                            command=lambda: self.setMode('AOO'))
@@ -536,12 +559,17 @@ class mainPage(tk.Frame):
                            command=lambda: self.setMode('VVI'))
         vviButton.grid(row = 10, column = 6, padx = 5, pady = 5)
 
+        dooButton = tk.Button(self, text="DOO",
+                           command=lambda: self.setMode('DOO'))
+        dooButton.grid(row = 10, column = 8, padx = 5, pady = 5)
+
 
         #Pacing Mode Parameters
         lrlLabel = tk.Label(self ,text = "Lower Rate Limit (ppm): 50 - 175",).grid(row = 15,column = 0, padx = 1, pady = 1, columnspan=2)
         urlLabel = tk.Label(self ,text = "Upper Rate Limit (ppm): 50 - 175").grid(row = 16,column = 0, padx = 1, pady = 1, columnspan=2)
-        atrialAmpLabel = tk.Label(self ,text = "Atrial Amplitude (V): 0.5 - 7.0").grid(row = 17,column = 0, padx = 1, pady = 1, columnspan=2)
-        atrialPWLabel = tk.Label(self ,text = "Atrial Pulse Width (ms): 0.05 or 0.1 - 1.9").grid(row = 18,column = 0, padx = 1, pady = 1, columnspan=2)
+        avDelayLabel = tk.Label(self ,text = "AV Delay (ms): 70 - 300",).grid(row = 17,column = 0, padx = 1, pady = 1, columnspan=2)
+        atrialAmpLabel = tk.Label(self ,text = "Atrial Amplitude (V): 0.5 - 7.0").grid(row = 18,column = 0, padx = 1, pady = 1, columnspan=2)
+        atrialPWLabel = tk.Label(self ,text = "Atrial Pulse Width (ms): 0.05 or 0.1 - 1.9").grid(row = 19,column = 0, padx = 1, pady = 1, columnspan=2)
         venAmpLabel = tk.Label(self ,text = "Ventricular Amplitude (V): 0.5 - 7.0").grid(row = 15,column = 4, padx = 1, pady = 1, columnspan=2)
         venPWLabel = tk.Label(self ,text = "Ventricular Pulse Width (ms): 0.05 or 0.1 - 1.9",).grid(row = 16,column = 4, padx = 1, pady = 1, columnspan=2)
         vrpLabel = tk.Label(self ,text = "VRP (ms): 150 - 500",).grid(row = 17,column = 4, padx = 1, pady = 1, columnspan=2)
@@ -550,6 +578,7 @@ class mainPage(tk.Frame):
 
         global lrlEntry
         global urlEntry
+        global avDelayEntry
         global atrialAmpEntry
         global atrialPWEntry
         global venAmpEntry
@@ -562,10 +591,12 @@ class mainPage(tk.Frame):
         lrlEntry.grid(row = 15,column = 2)
         urlEntry = tk.Entry(self, width=5, disabledbackground='grey')
         urlEntry.grid(row = 16,column = 2, padx = 1, pady = 1)
+        avDelayEntry = tk.Entry(self, width=5, disabledbackground='grey')
+        avDelayEntry.grid(row = 17,column = 2, padx = 1, pady = 1)
         atrialAmpEntry = tk.Entry(self, width=5, disabledbackground='grey')
-        atrialAmpEntry.grid(row = 17,column = 2, padx = 1, pady = 1)
+        atrialAmpEntry.grid(row = 18,column = 2, padx = 1, pady = 1)
         atrialPWEntry = tk.Entry(self, width=5, disabledbackground='grey')
-        atrialPWEntry.grid(row = 18,column = 2, padx = 1, pady = 1)
+        atrialPWEntry.grid(row = 19,column = 2, padx = 1, pady = 1)
         venAmpEntry = tk.Entry(self, width=5, disabledbackground='grey')
         venAmpEntry.grid(row = 15,column = 7, padx = 1, pady = 1)
         venPWEntry = tk.Entry(self, width=5, disabledbackground='grey')
@@ -575,15 +606,29 @@ class mainPage(tk.Frame):
         arpEntry = tk.Entry(self, width=5, disabledbackground='grey')
         arpEntry.grid(row = 18,column = 7, padx = 1, pady = 1)
 
+        # Serial Communication
+        serPortComLabel = tk.Label(self ,text = "Serial Port Communication",).grid(row = 21,column = 5)
+        serPortLabel = tk.Label(self ,text = "Port").grid(row = 22,column = 4)
+        serPortEntry = tk.Entry(self, width=5)
+        serPortEntry.grid(row = 22, column = 5)
+        eightBitKeyLabel = tk.Label(self ,text = "8-bit key").grid(row = 22,column = 6)
+        eightBitKeyEntry = tk.Entry(self, width=5)
+        eightBitKeyEntry.grid(row = 22, column = 7)
+        connectButton = tk.Button(self, text="Connect")
+        connectButton.grid(row = 22, column = 8)
+        sendButton = tk.Button(self, text="Send")
+        sendButton.grid(row = 22, column = 9)
+
+
         lrlEntry.bind('<FocusOut>', self._onTouch)
         urlEntry.bind('<FocusOut>', self._onTouch)
+        avDelayEntry.bind('<FocusOut>', self._onTouch)
         atrialAmpEntry.bind('<FocusOut>', self._onTouch)
         atrialPWEntry.bind('<FocusOut>', self._onTouch)
         venAmpEntry.bind('<FocusOut>', self._onTouch)
         venPWEntry.bind('<FocusOut>', self._onTouch)
         vrpEntry.bind('<FocusOut>', self._onTouch)
         arpEntry.bind('<FocusOut>', self._onTouch)
-        #lrlEntry.pack()
 
         buttonSave = tk.Button(self, text="Save", command = self.Save)
         buttonSave.grid(row = 19, column = 6, padx = 5, pady = 5)
