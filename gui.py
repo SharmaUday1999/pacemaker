@@ -53,7 +53,7 @@ class pacemaker(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold")
-        self.geometry("1000x300")
+        self.geometry("1000x350")
 
 
         # the container is where we'll stack a bunch of frames
@@ -493,7 +493,7 @@ class mainPage(tk.Frame):
         vrpEntry.configure(state= self._params['VRP'][mode])
         arpEntry.configure(state= self._params['ARP'][mode])
         # This is ugly, but .set didn't seem to work
-        selectedLabel = tk.Label(self ,text = mode).grid(row = 22,column = 1)
+        selectedLabel = tk.Label(self ,text = mode).grid(row = 24,column = 1)
 
     def Save(self):
 
@@ -656,11 +656,10 @@ class mainPage(tk.Frame):
         #Page Navigation
         logoutButton = tk.Button(self, text="Logout",
                            command=lambda: controller.show_frame('welcomePage'))
-        logoutButton.grid(row = 20, column = 3, padx = 5, pady = 5)
+        logoutButton.grid(row = 22, column = 3, padx = 5, pady = 5)
 
         #Pacing Modes
-        stateLabel = tk.Label(self ,text = "State").grid(row = 22,column = 0)
-        selectedLabel = tk.Label(self ,text = "None").grid(row = 22,column = 1)
+        stateLabel = tk.Label(self ,text = "State").grid(row = 24,column = 0, pady = 1)
 
         aooButton = tk.Button(self, text="AOO",
                            command=lambda: self.setMode('AOO'))
@@ -727,16 +726,16 @@ class mainPage(tk.Frame):
         arpEntry.grid(row = 18,column = 7, padx = 1, pady = 1)
 
         # Serial Communication
-        serPortComLabel = tk.Label(self ,text = "Serial Port Communication",).grid(row = 21,column = 5)
-        serPortLabel = tk.Label(self ,text = "Port").grid(row = 22,column = 4)
-        serPortEntry = tk.Entry(self, width=5)
-        serPortEntry.grid(row = 22, column = 5)
-        serPortEntry.insert('end', '/dev/cu.usbmodem0000001234561')
-        eightBitKeyLabel = tk.Label(self ,text = "8-bit key").grid(row = 22,column = 6)
-        eightBitKeyEntry = tk.Entry(self, width=5)
-        eightBitKeyEntry.grid(row = 22, column = 7)
+        # serPortComLabel = tk.Label(self ,text = "Serial Port Communication",).grid(row = 23,column = 5)
+        # serPortLabel = tk.Label(self ,text = "Port").grid(row = 24,column = 4)
+        # serPortEntry = tk.Entry(self, width=5)
+        # serPortEntry.grid(row = 24, column = 5)
+        # serPortEntry.insert('end', '/dev/cu.usbmodem0000001234561')
+        # eightBitKeyLabel = tk.Label(self ,text = "8-bit key").grid(row = 24,column = 6)
+        # eightBitKeyEntry = tk.Entry(self, width=5)
+        # eightBitKeyEntry.grid(row = 24, column = 7)
         sendButton = tk.Button(self, text="Send", command= self._send)
-        sendButton.grid(row = 22, column = 9)
+        sendButton.grid(row = 24, column = 9)
 
 
         lrlEntry.bind('<FocusOut>', self._onTouch)
@@ -750,7 +749,7 @@ class mainPage(tk.Frame):
         arpEntry.bind('<FocusOut>', self._onTouch)
 
         buttonSave = tk.Button(self, text="Save", command = self.Save)
-        buttonSave.grid(row = 19, column = 6, padx = 5, pady = 5)
+        buttonSave.grid(row = 22, column = 6, padx = 5, pady = 5)
 
 
 
