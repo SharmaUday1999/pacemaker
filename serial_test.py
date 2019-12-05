@@ -16,15 +16,13 @@ AV_DELAY = 7
 MESSAGE_LENGTH = 13
 STATE = 0x00
 
-<<<<<<< HEAD
 # PACEMAKER SERIAL PARAMETERS
 BAUDRATE = 115200
 TIMEOUT = 5
 
 
 ''' PARAMETER PROCESSING '''
-=======
->>>>>>> 80f5baa76c3022f5fd12324d67127f453a16b718
+
 # lower rate lim
 def LRL(num):
     return num
